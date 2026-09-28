@@ -1,0 +1,3513 @@
+{
+  "schema_version": 2,
+  "release": "r15.11",
+  "kind": "GENERATED_READ_ONLY_REPO_SNAPSHOT",
+  "repository": "odelix-web",
+  "canonical_plan_owner": "odelix-stack",
+  "canonical_plan_path": "delivery/ISSUES.json",
+  "canonical_plan_sha256": "22176027a06a797b4ae739d7c14c1a16aa7b22a34e886a275f245e97b6103f18",
+  "update_policy": "Export from one Stack plan. Do not independently edit snapshots; report changes through canonical Issue/Coordinator. After code exists, actual local Issue/PR determines status.",
+  "runtime_and_github_verified": false,
+  "issues": [
+    {
+      "id": "ODX-WEB-001",
+      "short_id": "WEB-001",
+      "title": "Создать Web shell, login и thin Product API client",
+      "repository": "odelix-web",
+      "target_repository": "odelix-web",
+      "domain": "WEB",
+      "wave": 3,
+      "lane": "B",
+      "priority": "P1",
+      "kind": "CORE",
+      "status": "PROPOSED_RECONCILE_EXISTING_FIRST",
+      "suggested_project_status": "Todo",
+      "module": "AREA-WEB-SHELL",
+      "depends_on": [
+        "ODX-PRD-004"
+      ],
+      "sources": [
+        "REACT",
+        "TANSTACK",
+        "OIDC",
+        "R15"
+      ],
+      "modes": [
+        "LIBRARY",
+        "NEW_ADAPTER"
+      ],
+      "paths": [
+        "apps/web/src/app/",
+        "packages/web-ui/",
+        "packages/product-api-client/",
+        "apps/web/tests/account.spec.ts"
+      ],
+      "work": [
+        "Подключить React/Next.js/TS и TanStack Query; зафиксировать versions/lock, test runner и privacy defaults.",
+        "Реализовать login/logout/consent через выбранный IdP flow и Product session context; секреты не в localStorage.",
+        "Подключить generated Product client, typed errors и tenant-scoped cache invalidation. Next routes при необходимости лишь thin BFF."
+      ],
+      "acceptance": [
+        "Смена пользователя очищает прежний tenant cache.",
+        "401/403 и истёкшая session видны без redirect loop.",
+        "Client не вычисляет entitlements и не решает права сам.",
+        "Fixtures помечены; применение real backend не меняет domain DTO."
+      ],
+      "test_path": "apps/web/tests/account.spec.ts",
+      "external_gate": "",
+      "old_package": "PAR-WEB-01",
+      "source_destination_decision": "",
+      "non_goals": "",
+      "github_issue_url": null,
+      "owner_base_commit": null,
+      "path_status": "PROPOSED_DESTINATION_RECONCILE_WITH_CURRENT_REPOSITORY",
+      "body_path": null,
+      "body": "<!-- odelix-planned-id: ODX-WEB-001 -->\n# [ODX-WEB-001] Создать Web shell, login и thin Product API client\n\n**Редакция:** r15.11 / Issue Pack 0.6.1 · **Статус плана:** PROPOSED / RECONCILE_EXISTING_FIRST.\n\n**Repository:** `odelix-web` · **Module:** `AREA-WEB-SHELL` · **Kind:** `DELIVERY_AREA`  \n**Domain:** `WEB` · **Priority:** `P1` · **Волна:** 3 · **Рабочая полоса:** B  \n**Затронутые модули:** `AREA-WEB-ACCOUNT`  \n**Спецификация:** `odelix-web/docs/DEVELOPMENT.md#modules`  \n**Repo Lead:** `repo-lead:odelix-web` · **Общий Project:** Odelix Delivery, `delivery-coordinator` в odelix-stack.\n\nЛогическое имя repo не определяет владельца GitHub. Фактические URL, visibility, Project ID и полномочия читаются из текущей конфигурации; личный аккаунт допустим, transfer не prerequisite. Одна каноническая Issue добавляется в Project ссылкой, не копируется.\n\n## Ожидаемый результат\n\nСоздать Web shell, login и thin Product API client. \n\n## Зависимости и допуск\n\n`ODX-PRD-004`\n\nПоле `depends_on` задаёт предшественников конкретного scope. Завершение кода не разрешает production. Контракты и изолированные fixtures допускают локальную разработку до runtime-интеграции. Условные/операционные действия выполняются только после своего grant и доказанных prerequisites.\n\n- **environment:** LOCAL_OR_ISOLATED_TEST_BY_DEFAULT\n- **production_authorization:** EXPLICIT_SEPARATE_GRANT\n- **evidence_status:** NOT_EVALUATED_IN_BUNDLE\n\n## Исходный код, сервисы и заимствования\n\n- **REACT — React + TypeScript + Next.js:** Выбранная web-native клиентская основа r13; Next.js только shell/routing/BFF без копии бизнес-правил Product. Версии фиксируются в bootstrap owner repo. Ref: `https://nextjs.org/docs`. Pin: `NOT_SELECTED`.\n- **TANSTACK — TanStack Query:** Client cache и invalidation. Не authoritative object store и не дополнительная очередь write-команд. Ref: `https://tanstack.com/query/latest`. Pin: `NOT_SELECTED`.\n- **OIDC — Managed IdP / Auth0 + jose:** Кандидат r13 — Auth0. Наш IdentityPort, верификация issuer/audience/expiry/JWKS через jose; IdP не выдаёт Odelix entitlements. Production договор/настройки не подтверждены. Ref: `https://auth0.com/docs/get-started/authentication-and-authorization-flow/authorization-code-flow-with-pkce`. Pin: `NOT_SELECTED`.\n- **R15 — Решение Workstation-first r15:** Историческое Workstation-first решение r15; текущая согласованная очередь r15.6/Issue Pack0.4.0. Не runtime evidence. Ref: `../odelix-stack/docs/DELIVERY-ROADMAP.md`. Pin: `r15-design`.\n\nДля ETAPE/OPENBB pin означает SELECTED_SOURCE_REVISION, а не installed package. Остальные исторические pins — provenance, не current HEAD. Фактические bytes, license/NOTICE и dependency lock проверяются в source-intake задаче.\n\n## Целевые пути\n\n```text\nodelix-web/\n  apps/web/src/app/\n  packages/web-ui/\n  packages/product-api-client/\n  apps/web/tests/account.spec.ts\n```\n\nСначала найти существующий эквивалент; не создавать дубликат. HFTJRN02 и его история не переписываются.\n\n## Работы\n\n1. Подключить React/Next.js/TS и TanStack Query; зафиксировать versions/lock, test runner и privacy defaults.\n2. Реализовать login/logout/consent через выбранный IdP flow и Product session context; секреты не в localStorage.\n3. Подключить generated Product client, typed errors и tenant-scoped cache invalidation. Next routes при необходимости лишь thin BFF.\n\n## Критерии приёмки\n\n- [ ] Смена пользователя очищает прежний tenant cache.\n- [ ] 401/403 и истёкшая session видны без redirect loop.\n- [ ] Client не вычисляет entitlements и не решает права сам.\n- [ ] Fixtures помечены; применение real backend не меняет domain DTO.\n\n## Проверка\n\nПредлагаемый test target: `apps/web/tests/account.spec.ts`. Команду определить по текущему коду. Эта карточка не содержит заявления, что тест выполнен.\n\nДля scope рыночных серий независимы: предметная семантика; совпадение live/replay/recovery при одинаковых inputs/cut/definition; ограниченная стоимость. Для прочих scopes применяются их собственные положительные, отрицательные и failure-проверки.\n\n## Не входит\n\nНезаявленные изменения вне разрешённого scope.\n\n## Завершение и полномочия\n\nСначала сопоставить существующие Issues (включая A0/M-87); не сбрасывать Done/history и не создавать дубли. Отдельный branch/worktree, явные write scopes, независимый reviewer. Общие contracts/lockfiles/migrations не дают фиктивной параллельности. Глобально три build/review scope; самостоятельная кодовая интеграция занимает тот же ресурс.\n\nВ исходной Issue сохранить base/result commits, exact tests, failed/not-run, artifacts, reviewer и следующий допустимый шаг. Доску обновляет назначенный Coordinator, сохраняя human override. Пакет не создаёт аккаунты, не настраивает GitHub и не разрешает purchases/deployment/финансовые действия.\n",
+      "source_refs": [
+        {
+          "id": "REACT",
+          "name": "React + TypeScript + Next.js",
+          "kind": "LIBRARY",
+          "ref": "https://nextjs.org/docs",
+          "detail": "Выбранная web-native клиентская основа r13; Next.js только shell/routing/BFF без копии бизнес-правил Product. Версии фиксируются в bootstrap owner repo.",
+          "pin": null,
+          "external": true
+        },
+        {
+          "id": "TANSTACK",
+          "name": "TanStack Query",
+          "kind": "LIBRARY",
+          "ref": "https://tanstack.com/query/latest",
+          "detail": "Client cache и invalidation. Не authoritative object store и не дополнительная очередь write-команд.",
+          "pin": null,
+          "external": true
+        },
+        {
+          "id": "OIDC",
+          "name": "Managed IdP / Auth0 + jose",
+          "kind": "SERVICE_ADAPTER",
+          "ref": "https://auth0.com/docs/get-started/authentication-and-authorization-flow/authorization-code-flow-with-pkce",
+          "detail": "Кандидат r13 — Auth0. Наш IdentityPort, верификация issuer/audience/expiry/JWKS через jose; IdP не выдаёт Odelix entitlements. Production договор/настройки не подтверждены.",
+          "pin": null,
+          "external": true
+        },
+        {
+          "id": "R15",
+          "name": "Решение Workstation-first r15",
+          "kind": "PROJECT_SPEC",
+          "ref": "../odelix-stack/docs/DELIVERY-ROADMAP.md",
+          "detail": "Историческое Workstation-first решение r15; текущая согласованная очередь r15.6/Issue Pack0.4.0. Не runtime evidence.",
+          "pin": "r15-design",
+          "external": false
+        }
+      ],
+      "test_execution_status": "NOT_RUN_PLANNING_ONLY",
+      "previous_wave_r14": 2,
+      "phase_r15": "Options ↔ underlying и Evidence; Hosted Missions и generic PAPER components",
+      "plan_version": "0.6.1",
+      "binding_note": "Фактический GitHub status/URL проверяется Coordinator; не создавать дубликат.",
+      "original_body_sha256": "a2572fbec7c761572adabe0ab8444d0ff11d02639aa7f221c331fa005b3ad5f7",
+      "primary_module_id": "AREA-WEB-SHELL",
+      "affected_module_ids": [
+        "AREA-WEB-ACCOUNT"
+      ],
+      "module_kind": "DELIVERY_AREA",
+      "module_spec_path": "docs/DEVELOPMENT.md#modules",
+      "module_legacy": "Account/Web host",
+      "component": "Создать Web shell, login и thin Product API client",
+      "module_assignment_status": "DOCUMENTED_MAPPING_REPO_LEAD_CONFIRMATION_REQUIRED",
+      "repo_lead_role": "repo-lead:odelix-web",
+      "project_coordinator_role": "delivery-coordinator",
+      "project_membership_status": "NOT_VERIFIED",
+      "module_mapping_revision": "r15.3",
+      "suggested_project_fields": {
+        "Module": "AREA-WEB-SHELL",
+        "Domain": "WEB",
+        "Priority": "P1",
+        "Status": "Todo"
+      },
+      "suggested_labels": [
+        "odelix-delivery",
+        "module:AREA-WEB-SHELL"
+      ],
+      "documentation_revision": "r15.11",
+      "target_binding_policy": "RESOLVE_FROM_ACTUAL_REPO_BINDING_PERSONAL_OR_ORG_NOT_A_PREREQUISITE",
+      "admission": {
+        "code_dependencies": [
+          "ODX-PRD-004"
+        ],
+        "environment": "LOCAL_OR_ISOLATED_TEST_BY_DEFAULT",
+        "production_authorization": "EXPLICIT_SEPARATE_GRANT",
+        "evidence_status": "NOT_EVALUATED_IN_BUNDLE"
+      },
+      "decision_status": "PROPOSED",
+      "implementation_status": "NOT_VERIFIED",
+      "primary_module_name": "App shell",
+      "snapshot_note": "READ_ONLY_DERIVED_TASK: links in original body converted to logical references; use module_spec_path within this repo. Work/acceptance match canonical current task; prior-to-current differences are in the migration registry."
+    },
+    {
+      "id": "ODX-WEB-002",
+      "short_id": "WEB-002",
+      "title": "Сделать Run progress/result/Evidence viewer",
+      "repository": "odelix-web",
+      "target_repository": "odelix-web",
+      "domain": "WEB",
+      "wave": 3,
+      "lane": "B",
+      "priority": "P1",
+      "kind": "CORE",
+      "status": "PROPOSED_RECONCILE_EXISTING_FIRST",
+      "suggested_project_status": "Todo",
+      "module": "AREA-WEB-ASK",
+      "depends_on": [
+        "ODX-WEB-001",
+        "ODX-PRD-004"
+      ],
+      "sources": [
+        "REACT",
+        "TANSTACK",
+        "R15"
+      ],
+      "modes": [
+        "NEW"
+      ],
+      "paths": [
+        "apps/web/src/features/runs/",
+        "apps/web/src/features/evidence/",
+        "apps/web/tests/run-viewer.spec.ts"
+      ],
+      "work": [
+        "Показать start/get/events/cancel, progress,cost estimates,terminal reason и resultId.",
+        "Добавить Evidence viewer: source/method/asOf/quality, missing/degraded/empty states и raw vs managed label.",
+        "Работать на producer fixtures до интеграции PRD-008; после — тот же объект открывается через deep link."
+      ],
+      "acceptance": [
+        "Reconnect/double-click не дублируют запуск.",
+        "NO_CONCLUSION и PARTIAL не рисуются как успешный прогноз.",
+        "Цена/единицы берутся из typed result.",
+        "Cancel Run не показывает ложное сообщение о закрытии позиции."
+      ],
+      "test_path": "apps/web/tests/run-viewer.spec.ts",
+      "external_gate": "",
+      "old_package": "PAR-WEB-01",
+      "source_destination_decision": "",
+      "non_goals": "",
+      "github_issue_url": null,
+      "owner_base_commit": null,
+      "path_status": "PROPOSED_DESTINATION_RECONCILE_WITH_CURRENT_REPOSITORY",
+      "body_path": null,
+      "body": "<!-- odelix-planned-id: ODX-WEB-002 -->\n# [ODX-WEB-002] Сделать Run progress/result/Evidence viewer\n\n**Редакция:** r15.11 / Issue Pack 0.6.1 · **Статус плана:** PROPOSED / RECONCILE_EXISTING_FIRST.\n\n**Repository:** `odelix-web` · **Module:** `AREA-WEB-ASK` · **Kind:** `DELIVERY_AREA`  \n**Domain:** `WEB` · **Priority:** `P1` · **Волна:** 3 · **Рабочая полоса:** B  \n**Затронутые модули:** Нет дополнительных  \n**Спецификация:** `odelix-web/docs/DEVELOPMENT.md#modules`  \n**Repo Lead:** `repo-lead:odelix-web` · **Общий Project:** Odelix Delivery, `delivery-coordinator` в odelix-stack.\n\nЛогическое имя repo не определяет владельца GitHub. Фактические URL, visibility, Project ID и полномочия читаются из текущей конфигурации; личный аккаунт допустим, transfer не prerequisite. Одна каноническая Issue добавляется в Project ссылкой, не копируется.\n\n## Ожидаемый результат\n\nСделать Run progress/result/Evidence viewer. \n\n## Зависимости и допуск\n\n`ODX-WEB-001`, `ODX-PRD-004`\n\nПоле `depends_on` задаёт предшественников конкретного scope. Завершение кода не разрешает production. Контракты и изолированные fixtures допускают локальную разработку до runtime-интеграции. Условные/операционные действия выполняются только после своего grant и доказанных prerequisites.\n\n- **environment:** LOCAL_OR_ISOLATED_TEST_BY_DEFAULT\n- **production_authorization:** EXPLICIT_SEPARATE_GRANT\n- **evidence_status:** NOT_EVALUATED_IN_BUNDLE\n\n## Исходный код, сервисы и заимствования\n\n- **REACT — React + TypeScript + Next.js:** Выбранная web-native клиентская основа r13; Next.js только shell/routing/BFF без копии бизнес-правил Product. Версии фиксируются в bootstrap owner repo. Ref: `https://nextjs.org/docs`. Pin: `NOT_SELECTED`.\n- **TANSTACK — TanStack Query:** Client cache и invalidation. Не authoritative object store и не дополнительная очередь write-команд. Ref: `https://tanstack.com/query/latest`. Pin: `NOT_SELECTED`.\n- **R15 — Решение Workstation-first r15:** Историческое Workstation-first решение r15; текущая согласованная очередь r15.6/Issue Pack0.4.0. Не runtime evidence. Ref: `../odelix-stack/docs/DELIVERY-ROADMAP.md`. Pin: `r15-design`.\n\nДля ETAPE/OPENBB pin означает SELECTED_SOURCE_REVISION, а не installed package. Остальные исторические pins — provenance, не current HEAD. Фактические bytes, license/NOTICE и dependency lock проверяются в source-intake задаче.\n\n## Целевые пути\n\n```text\nodelix-web/\n  apps/web/src/features/runs/\n  apps/web/src/features/evidence/\n  apps/web/tests/run-viewer.spec.ts\n```\n\nСначала найти существующий эквивалент; не создавать дубликат. HFTJRN02 и его история не переписываются.\n\n## Работы\n\n1. Показать start/get/events/cancel, progress,cost estimates,terminal reason и resultId.\n2. Добавить Evidence viewer: source/method/asOf/quality, missing/degraded/empty states и raw vs managed label.\n3. Работать на producer fixtures до интеграции PRD-008; после — тот же объект открывается через deep link.\n\n## Критерии приёмки\n\n- [ ] Reconnect/double-click не дублируют запуск.\n- [ ] NO_CONCLUSION и PARTIAL не рисуются как успешный прогноз.\n- [ ] Цена/единицы берутся из typed result.\n- [ ] Cancel Run не показывает ложное сообщение о закрытии позиции.\n\n## Проверка\n\nПредлагаемый test target: `apps/web/tests/run-viewer.spec.ts`. Команду определить по текущему коду. Эта карточка не содержит заявления, что тест выполнен.\n\nДля scope рыночных серий независимы: предметная семантика; совпадение live/replay/recovery при одинаковых inputs/cut/definition; ограниченная стоимость. Для прочих scopes применяются их собственные положительные, отрицательные и failure-проверки.\n\n## Не входит\n\nНезаявленные изменения вне разрешённого scope.\n\n## Завершение и полномочия\n\nСначала сопоставить существующие Issues (включая A0/M-87); не сбрасывать Done/history и не создавать дубли. Отдельный branch/worktree, явные write scopes, независимый reviewer. Общие contracts/lockfiles/migrations не дают фиктивной параллельности. Глобально три build/review scope; самостоятельная кодовая интеграция занимает тот же ресурс.\n\nВ исходной Issue сохранить base/result commits, exact tests, failed/not-run, artifacts, reviewer и следующий допустимый шаг. Доску обновляет назначенный Coordinator, сохраняя human override. Пакет не создаёт аккаунты, не настраивает GitHub и не разрешает purchases/deployment/финансовые действия.\n",
+      "source_refs": [
+        {
+          "id": "REACT",
+          "name": "React + TypeScript + Next.js",
+          "kind": "LIBRARY",
+          "ref": "https://nextjs.org/docs",
+          "detail": "Выбранная web-native клиентская основа r13; Next.js только shell/routing/BFF без копии бизнес-правил Product. Версии фиксируются в bootstrap owner repo.",
+          "pin": null,
+          "external": true
+        },
+        {
+          "id": "TANSTACK",
+          "name": "TanStack Query",
+          "kind": "LIBRARY",
+          "ref": "https://tanstack.com/query/latest",
+          "detail": "Client cache и invalidation. Не authoritative object store и не дополнительная очередь write-команд.",
+          "pin": null,
+          "external": true
+        },
+        {
+          "id": "R15",
+          "name": "Решение Workstation-first r15",
+          "kind": "PROJECT_SPEC",
+          "ref": "../odelix-stack/docs/DELIVERY-ROADMAP.md",
+          "detail": "Историческое Workstation-first решение r15; текущая согласованная очередь r15.6/Issue Pack0.4.0. Не runtime evidence.",
+          "pin": "r15-design",
+          "external": false
+        }
+      ],
+      "test_execution_status": "NOT_RUN_PLANNING_ONLY",
+      "previous_wave_r14": 2,
+      "phase_r15": "Options ↔ underlying и Evidence; Hosted Missions и generic PAPER components",
+      "plan_version": "0.6.1",
+      "binding_note": "Фактический GitHub status/URL проверяется Coordinator; не создавать дубликат.",
+      "original_body_sha256": "f7958b9d68924bd902bf31df5c182af8e5c4dc0b574c6cb32c9deb5f7c7da42d",
+      "primary_module_id": "AREA-WEB-ASK",
+      "affected_module_ids": [],
+      "module_kind": "DELIVERY_AREA",
+      "module_spec_path": "docs/DEVELOPMENT.md#modules",
+      "module_legacy": "Web Run UX",
+      "component": "Сделать Run progress/result/Evidence viewer",
+      "module_assignment_status": "DOCUMENTED_MAPPING_REPO_LEAD_CONFIRMATION_REQUIRED",
+      "repo_lead_role": "repo-lead:odelix-web",
+      "project_coordinator_role": "delivery-coordinator",
+      "project_membership_status": "NOT_VERIFIED",
+      "module_mapping_revision": "r15.3",
+      "suggested_project_fields": {
+        "Module": "AREA-WEB-ASK",
+        "Domain": "WEB",
+        "Priority": "P1",
+        "Status": "Todo"
+      },
+      "suggested_labels": [
+        "odelix-delivery",
+        "module:AREA-WEB-ASK"
+      ],
+      "documentation_revision": "r15.11",
+      "target_binding_policy": "RESOLVE_FROM_ACTUAL_REPO_BINDING_PERSONAL_OR_ORG_NOT_A_PREREQUISITE",
+      "admission": {
+        "code_dependencies": [
+          "ODX-WEB-001",
+          "ODX-PRD-004"
+        ],
+        "environment": "LOCAL_OR_ISOLATED_TEST_BY_DEFAULT",
+        "production_authorization": "EXPLICIT_SEPARATE_GRANT",
+        "evidence_status": "NOT_EVALUATED_IN_BUNDLE"
+      },
+      "decision_status": "PROPOSED",
+      "implementation_status": "NOT_VERIFIED",
+      "primary_module_name": "Run, Ask and Evidence presentation",
+      "snapshot_note": "READ_ONLY_DERIVED_TASK: links in original body converted to logical references; use module_spec_path within this repo. Work/acceptance match canonical current task; prior-to-current differences are in the migration registry."
+    },
+    {
+      "id": "ODX-WEB-003",
+      "short_id": "WEB-003",
+      "title": "Собрать первый Desk из общих WKS packages",
+      "repository": "odelix-web",
+      "target_repository": "odelix-web",
+      "domain": "WEB",
+      "wave": 3,
+      "lane": "B",
+      "priority": "P1",
+      "kind": "CORE",
+      "status": "PROPOSED_RECONCILE_EXISTING_FIRST",
+      "suggested_project_status": "Todo",
+      "module": "AREA-WEB-DESK",
+      "depends_on": [
+        "ODX-WEB-002",
+        "ODX-WKS-002",
+        "ODX-WKS-003",
+        "ODX-PRD-011",
+        "ODX-HAR-007"
+      ],
+      "sources": [
+        "REACT",
+        "TANSTACK",
+        "R15",
+        "R15_8"
+      ],
+      "modes": [
+        "PACKAGE_INTEGRATION",
+        "NEW"
+      ],
+      "paths": [
+        "apps/web/src/features/desk/",
+        "apps/web/tests/select-ask-save.spec.ts"
+      ],
+      "work": [
+        "Импортировать shared Scene/Commands/Layout/Chart, не копировать их source внутрь Web.",
+        "Связать selection→Context→Run→Evidence→Thesis/Watch draft и preview/apply/reject.",
+        "Добавить deep links/reopen и conflict UX; сохранять old evidence на replay.",
+        "Для external-data preview использовать WKS-020/021 components и DataBinding, без собственного provider SDK, endpoint или duplicate source registry."
+      ],
+      "acceptance": [
+        "Один сохранённый objectId открывается из MCP/API/Web.",
+        "Пользователь видит exact context и изменения до apply.",
+        "После reload видны исходный Thesis и provenance.",
+        "Cancelled/partial/no-conclusion states не скрыты.",
+        "Account/route composition сохраняет source/quality; unavailable native layers не подделаны при доступных external candles."
+      ],
+      "test_path": "apps/web/tests/select-ask-save.spec.ts",
+      "external_gate": "",
+      "old_package": "PAR-WEB-02",
+      "source_destination_decision": "",
+      "non_goals": "",
+      "github_issue_url": null,
+      "owner_base_commit": null,
+      "path_status": "PROPOSED_DESTINATION_RECONCILE_WITH_CURRENT_REPOSITORY",
+      "body_path": null,
+      "body": "<!-- odelix-planned-id: ODX-WEB-003 -->\n# [ODX-WEB-003] Собрать первый Desk из общих WKS packages\n\n**Редакция:** r15.11 / Issue Pack 0.6.1 · **Статус плана:** PROPOSED / RECONCILE_EXISTING_FIRST.\n\n**Repository:** `odelix-web` · **Module:** `AREA-WEB-DESK` · **Kind:** `DELIVERY_AREA`  \n**Domain:** `WEB` · **Priority:** `P1` · **Волна:** 3 · **Рабочая полоса:** B  \n**Затронутые модули:** Нет дополнительных  \n**Спецификация:** `odelix-web/docs/DEVELOPMENT.md#modules`  \n**Repo Lead:** `repo-lead:odelix-web` · **Общий Project:** Odelix Delivery, `delivery-coordinator` в odelix-stack.\n\nЛогическое имя repo не определяет владельца GitHub. Фактические URL, visibility, Project ID и полномочия читаются из текущей конфигурации; личный аккаунт допустим, transfer не prerequisite. Одна каноническая Issue добавляется в Project ссылкой, не копируется.\n\n## Ожидаемый результат\n\nСобрать первый Desk из общих WKS packages. \n\n## Зависимости и допуск\n\n`ODX-WEB-002`, `ODX-WKS-002`, `ODX-WKS-003`, `ODX-PRD-011`, `ODX-HAR-007`\n\nПоле `depends_on` задаёт предшественников конкретного scope. Завершение кода не разрешает production. Контракты и изолированные fixtures допускают локальную разработку до runtime-интеграции. Условные/операционные действия выполняются только после своего grant и доказанных prerequisites.\n\n- **environment:** LOCAL_OR_ISOLATED_TEST_BY_DEFAULT\n- **production_authorization:** EXPLICIT_SEPARATE_GRANT\n- **evidence_status:** NOT_EVALUATED_IN_BUNDLE\n\n## Исходный код, сервисы и заимствования\n\n- **REACT — React + TypeScript + Next.js:** Выбранная web-native клиентская основа r13; Next.js только shell/routing/BFF без копии бизнес-правил Product. Версии фиксируются в bootstrap owner repo. Ref: `https://nextjs.org/docs`. Pin: `NOT_SELECTED`.\n- **TANSTACK — TanStack Query:** Client cache и invalidation. Не authoritative object store и не дополнительная очередь write-команд. Ref: `https://tanstack.com/query/latest`. Pin: `NOT_SELECTED`.\n- **R15 — Решение Workstation-first r15:** Историческое Workstation-first решение r15; текущая согласованная очередь r15.6/Issue Pack0.4.0. Не runtime evidence. Ref: `../odelix-stack/docs/DELIVERY-ROADMAP.md`. Pin: `r15-design`.\n- **R15_8 — Odelix внешний data layer r15.8:** Единый producer-owned query/capability/manifest contract; external snapshot отдельно от native event stream. EXTERNAL_DATA_PREVIEW не закрывает FLOW_DESK/PIT/SCALE. Ref: `../odelix-market/docs/DATA-AND-REPLAY.md#external-data-layer`. Pin: `r15.8-design`.\n\nДля ETAPE/OPENBB pin означает SELECTED_SOURCE_REVISION, а не installed package. Остальные исторические pins — provenance, не current HEAD. Фактические bytes, license/NOTICE и dependency lock проверяются в source-intake задаче.\n\n## Целевые пути\n\n```text\nodelix-web/\n  apps/web/src/features/desk/\n  apps/web/tests/select-ask-save.spec.ts\n```\n\nСначала найти существующий эквивалент; не создавать дубликат. HFTJRN02 и его история не переписываются.\n\n## Работы\n\n1. Импортировать shared Scene/Commands/Layout/Chart, не копировать их source внутрь Web.\n2. Связать selection→Context→Run→Evidence→Thesis/Watch draft и preview/apply/reject.\n3. Добавить deep links/reopen и conflict UX; сохранять old evidence на replay.\n4. Для external-data preview использовать WKS-020/021 components и DataBinding, без собственного provider SDK, endpoint или duplicate source registry.\n\n## Критерии приёмки\n\n- [ ] Один сохранённый objectId открывается из MCP/API/Web.\n- [ ] Пользователь видит exact context и изменения до apply.\n- [ ] После reload видны исходный Thesis и provenance.\n- [ ] Cancelled/partial/no-conclusion states не скрыты.\n- [ ] Account/route composition сохраняет source/quality; unavailable native layers не подделаны при доступных external candles.\n\n## Проверка\n\nПредлагаемый test target: `apps/web/tests/select-ask-save.spec.ts`. Команду определить по текущему коду. Эта карточка не содержит заявления, что тест выполнен.\n\nДля scope рыночных серий независимы: предметная семантика; совпадение live/replay/recovery при одинаковых inputs/cut/definition; ограниченная стоимость. Для прочих scopes применяются их собственные положительные, отрицательные и failure-проверки.\n\n## Не входит\n\nНезаявленные изменения вне разрешённого scope.\n\n## Завершение и полномочия\n\nСначала сопоставить существующие Issues (включая A0/M-87); не сбрасывать Done/history и не создавать дубли. Отдельный branch/worktree, явные write scopes, независимый reviewer. Общие contracts/lockfiles/migrations не дают фиктивной параллельности. Глобально три build/review scope; самостоятельная кодовая интеграция занимает тот же ресурс.\n\nВ исходной Issue сохранить base/result commits, exact tests, failed/not-run, artifacts, reviewer и следующий допустимый шаг. Доску обновляет назначенный Coordinator, сохраняя human override. Пакет не создаёт аккаунты, не настраивает GitHub и не разрешает purchases/deployment/финансовые действия.\n",
+      "source_refs": [
+        {
+          "id": "REACT",
+          "name": "React + TypeScript + Next.js",
+          "kind": "LIBRARY",
+          "ref": "https://nextjs.org/docs",
+          "detail": "Выбранная web-native клиентская основа r13; Next.js только shell/routing/BFF без копии бизнес-правил Product. Версии фиксируются в bootstrap owner repo.",
+          "pin": null,
+          "external": true
+        },
+        {
+          "id": "TANSTACK",
+          "name": "TanStack Query",
+          "kind": "LIBRARY",
+          "ref": "https://tanstack.com/query/latest",
+          "detail": "Client cache и invalidation. Не authoritative object store и не дополнительная очередь write-команд.",
+          "pin": null,
+          "external": true
+        },
+        {
+          "id": "R15",
+          "name": "Решение Workstation-first r15",
+          "kind": "PROJECT_SPEC",
+          "ref": "../odelix-stack/docs/DELIVERY-ROADMAP.md",
+          "detail": "Историческое Workstation-first решение r15; текущая согласованная очередь r15.6/Issue Pack0.4.0. Не runtime evidence.",
+          "pin": "r15-design",
+          "external": false
+        },
+        {
+          "id": "R15_8",
+          "name": "Odelix внешний data layer r15.8",
+          "kind": "PROJECT_SPEC",
+          "ref": "../odelix-market/docs/DATA-AND-REPLAY.md#external-data-layer",
+          "detail": "Единый producer-owned query/capability/manifest contract; external snapshot отдельно от native event stream. EXTERNAL_DATA_PREVIEW не закрывает FLOW_DESK/PIT/SCALE.",
+          "pin": "r15.8-design",
+          "external": false
+        }
+      ],
+      "test_execution_status": "NOT_RUN_PLANNING_ONLY",
+      "previous_wave_r14": 4,
+      "phase_r15": "Options ↔ underlying и Evidence; Hosted Missions и generic PAPER components",
+      "plan_version": "0.6.1",
+      "binding_note": "Фактический GitHub status/URL проверяется Coordinator; не создавать дубликат.",
+      "original_body_sha256": "b99e3814ffb1e7688daf7f868aa67e6b6cd2ee6ac2e31b64abd518bec2e75419",
+      "primary_module_id": "AREA-WEB-DESK",
+      "affected_module_ids": [],
+      "module_kind": "DELIVERY_AREA",
+      "module_spec_path": "docs/DEVELOPMENT.md#modules",
+      "module_legacy": "Web Desk composition",
+      "component": "Собрать первый Desk из общих WKS packages",
+      "module_assignment_status": "DOCUMENTED_MAPPING_REPO_LEAD_CONFIRMATION_REQUIRED",
+      "repo_lead_role": "repo-lead:odelix-web",
+      "project_coordinator_role": "delivery-coordinator",
+      "project_membership_status": "NOT_VERIFIED",
+      "module_mapping_revision": "r15.3",
+      "suggested_project_fields": {
+        "Module": "AREA-WEB-DESK",
+        "Domain": "WEB",
+        "Priority": "P1",
+        "Status": "Todo"
+      },
+      "suggested_labels": [
+        "odelix-delivery",
+        "module:AREA-WEB-DESK"
+      ],
+      "documentation_revision": "r15.11",
+      "target_binding_policy": "RESOLVE_FROM_ACTUAL_REPO_BINDING_PERSONAL_OR_ORG_NOT_A_PREREQUISITE",
+      "admission": {
+        "code_dependencies": [
+          "ODX-WEB-002",
+          "ODX-WKS-002",
+          "ODX-WKS-003",
+          "ODX-PRD-011",
+          "ODX-HAR-007"
+        ],
+        "environment": "LOCAL_OR_ISOLATED_TEST_BY_DEFAULT",
+        "production_authorization": "EXPLICIT_SEPARATE_GRANT",
+        "evidence_status": "NOT_EVALUATED_IN_BUNDLE"
+      },
+      "decision_status": "PROPOSED",
+      "implementation_status": "NOT_VERIFIED",
+      "primary_module_name": "Desk/Terminal composition",
+      "snapshot_note": "READ_ONLY_DERIVED_TASK: links in original body converted to logical references; use module_spec_path within this repo. Work/acceptance match canonical current task; prior-to-current differences are in the migration registry."
+    },
+    {
+      "id": "ODX-WEB-004",
+      "short_id": "WEB-004",
+      "title": "Добавить Account usage/checkout и revoke UX",
+      "repository": "odelix-web",
+      "target_repository": "odelix-web",
+      "domain": "WEB",
+      "wave": 6,
+      "lane": "B",
+      "priority": "P1",
+      "kind": "CORE",
+      "status": "PROPOSED_RECONCILE_EXISTING_FIRST",
+      "suggested_project_status": "Todo",
+      "module": "AREA-WEB-ACCOUNT",
+      "depends_on": [
+        "ODX-WEB-003",
+        "ODX-PRD-012",
+        "ODX-PRD-013"
+      ],
+      "sources": [
+        "REACT",
+        "STRIPE",
+        "R15"
+      ],
+      "modes": [
+        "NEW",
+        "PACKAGE_INTEGRATION"
+      ],
+      "paths": [
+        "apps/web/src/features/account/",
+        "apps/web/tests/usage-access.spec.ts"
+      ],
+      "work": [
+        "Показать current entitlements,limits,consumed/pending usage,run estimate и provider-hosted checkout.",
+        "Реализовать logout/revoke new scope consent и видимую блокировку дорогостоящих операций.",
+        "Для demo account отключить real billing и ясно маркировать fixture/test environment."
+      ],
+      "acceptance": [
+        "Frontend не сам выдаёт paid entitlement.",
+        "Scope escalation требует explicit flow.",
+        "Ошибки checkout не создают fake subscription.",
+        "После revoke новые protected requests denied, свои разрешённые exports не теряются."
+      ],
+      "test_path": "apps/web/tests/usage-access.spec.ts",
+      "external_gate": "",
+      "old_package": "PAR-WEB-02",
+      "source_destination_decision": "",
+      "non_goals": "",
+      "github_issue_url": null,
+      "owner_base_commit": null,
+      "path_status": "PROPOSED_DESTINATION_RECONCILE_WITH_CURRENT_REPOSITORY",
+      "body_path": null,
+      "body": "<!-- odelix-planned-id: ODX-WEB-004 -->\n# [ODX-WEB-004] Добавить Account usage/checkout и revoke UX\n\n**Редакция:** r15.11 / Issue Pack 0.6.1 · **Статус плана:** PROPOSED / RECONCILE_EXISTING_FIRST.\n\n**Repository:** `odelix-web` · **Module:** `AREA-WEB-ACCOUNT` · **Kind:** `DELIVERY_AREA`  \n**Domain:** `WEB` · **Priority:** `P1` · **Волна:** 6 · **Рабочая полоса:** B  \n**Затронутые модули:** Нет дополнительных  \n**Спецификация:** `odelix-web/docs/DEVELOPMENT.md#modules`  \n**Repo Lead:** `repo-lead:odelix-web` · **Общий Project:** Odelix Delivery, `delivery-coordinator` в odelix-stack.\n\nЛогическое имя repo не определяет владельца GitHub. Фактические URL, visibility, Project ID и полномочия читаются из текущей конфигурации; личный аккаунт допустим, transfer не prerequisite. Одна каноническая Issue добавляется в Project ссылкой, не копируется.\n\n## Ожидаемый результат\n\nДобавить Account usage/checkout и revoke UX. \n\n## Зависимости и допуск\n\n`ODX-WEB-003`, `ODX-PRD-012`, `ODX-PRD-013`\n\nПоле `depends_on` задаёт предшественников конкретного scope. Завершение кода не разрешает production. Контракты и изолированные fixtures допускают локальную разработку до runtime-интеграции. Условные/операционные действия выполняются только после своего grant и доказанных prerequisites.\n\n- **environment:** LOCAL_OR_ISOLATED_TEST_BY_DEFAULT\n- **production_authorization:** EXPLICIT_SEPARATE_GRANT\n- **evidence_status:** NOT_EVALUATED_IN_BUNDLE\n\n## Исходный код, сервисы и заимствования\n\n- **REACT — React + TypeScript + Next.js:** Выбранная web-native клиентская основа r13; Next.js только shell/routing/BFF без копии бизнес-правил Product. Версии фиксируются в bootstrap owner repo. Ref: `https://nextjs.org/docs`. Pin: `NOT_SELECTED`.\n- **STRIPE — Stripe Billing:** Кандидат r13. Checkout/customer portal, проверка подписи, idempotent webhook projection, usage outbox. Commercial eligibility и договор — отдельное условие. Не provider в hot tool path. Ref: `https://docs.stripe.com/billing/subscriptions/webhooks`. Pin: `NOT_SELECTED`.\n- **R15 — Решение Workstation-first r15:** Историческое Workstation-first решение r15; текущая согласованная очередь r15.6/Issue Pack0.4.0. Не runtime evidence. Ref: `../odelix-stack/docs/DELIVERY-ROADMAP.md`. Pin: `r15-design`.\n\nДля ETAPE/OPENBB pin означает SELECTED_SOURCE_REVISION, а не installed package. Остальные исторические pins — provenance, не current HEAD. Фактические bytes, license/NOTICE и dependency lock проверяются в source-intake задаче.\n\n## Целевые пути\n\n```text\nodelix-web/\n  apps/web/src/features/account/\n  apps/web/tests/usage-access.spec.ts\n```\n\nСначала найти существующий эквивалент; не создавать дубликат. HFTJRN02 и его история не переписываются.\n\n## Работы\n\n1. Показать current entitlements,limits,consumed/pending usage,run estimate и provider-hosted checkout.\n2. Реализовать logout/revoke new scope consent и видимую блокировку дорогостоящих операций.\n3. Для demo account отключить real billing и ясно маркировать fixture/test environment.\n\n## Критерии приёмки\n\n- [ ] Frontend не сам выдаёт paid entitlement.\n- [ ] Scope escalation требует explicit flow.\n- [ ] Ошибки checkout не создают fake subscription.\n- [ ] После revoke новые protected requests denied, свои разрешённые exports не теряются.\n\n## Проверка\n\nПредлагаемый test target: `apps/web/tests/usage-access.spec.ts`. Команду определить по текущему коду. Эта карточка не содержит заявления, что тест выполнен.\n\nДля scope рыночных серий независимы: предметная семантика; совпадение live/replay/recovery при одинаковых inputs/cut/definition; ограниченная стоимость. Для прочих scopes применяются их собственные положительные, отрицательные и failure-проверки.\n\n## Не входит\n\nНезаявленные изменения вне разрешённого scope.\n\n## Завершение и полномочия\n\nСначала сопоставить существующие Issues (включая A0/M-87); не сбрасывать Done/history и не создавать дубли. Отдельный branch/worktree, явные write scopes, независимый reviewer. Общие contracts/lockfiles/migrations не дают фиктивной параллельности. Глобально три build/review scope; самостоятельная кодовая интеграция занимает тот же ресурс.\n\nВ исходной Issue сохранить base/result commits, exact tests, failed/not-run, artifacts, reviewer и следующий допустимый шаг. Доску обновляет назначенный Coordinator, сохраняя human override. Пакет не создаёт аккаунты, не настраивает GitHub и не разрешает purchases/deployment/финансовые действия.\n",
+      "source_refs": [
+        {
+          "id": "REACT",
+          "name": "React + TypeScript + Next.js",
+          "kind": "LIBRARY",
+          "ref": "https://nextjs.org/docs",
+          "detail": "Выбранная web-native клиентская основа r13; Next.js только shell/routing/BFF без копии бизнес-правил Product. Версии фиксируются в bootstrap owner repo.",
+          "pin": null,
+          "external": true
+        },
+        {
+          "id": "STRIPE",
+          "name": "Stripe Billing",
+          "kind": "SERVICE_ADAPTER",
+          "ref": "https://docs.stripe.com/billing/subscriptions/webhooks",
+          "detail": "Кандидат r13. Checkout/customer portal, проверка подписи, idempotent webhook projection, usage outbox. Commercial eligibility и договор — отдельное условие. Не provider в hot tool path.",
+          "pin": null,
+          "external": true
+        },
+        {
+          "id": "R15",
+          "name": "Решение Workstation-first r15",
+          "kind": "PROJECT_SPEC",
+          "ref": "../odelix-stack/docs/DELIVERY-ROADMAP.md",
+          "detail": "Историческое Workstation-first решение r15; текущая согласованная очередь r15.6/Issue Pack0.4.0. Не runtime evidence.",
+          "pin": "r15-design",
+          "external": false
+        }
+      ],
+      "test_execution_status": "NOT_RUN_PLANNING_ONLY",
+      "previous_wave_r14": 4,
+      "phase_r15": "Коммерческий Connect; Коммерческая готовность и условная приёмка Node",
+      "plan_version": "0.6.1",
+      "binding_note": "Фактический GitHub status/URL проверяется Coordinator; не создавать дубликат.",
+      "original_body_sha256": "47b41768684f24657f13285d69663648ed1412d7549981f89234d1156370d5b6",
+      "primary_module_id": "AREA-WEB-ACCOUNT",
+      "affected_module_ids": [],
+      "module_kind": "DELIVERY_AREA",
+      "module_spec_path": "docs/DEVELOPMENT.md#modules",
+      "module_legacy": "Web Account",
+      "component": "Добавить Account usage/checkout и revoke UX",
+      "module_assignment_status": "DOCUMENTED_MAPPING_REPO_LEAD_CONFIRMATION_REQUIRED",
+      "repo_lead_role": "repo-lead:odelix-web",
+      "project_coordinator_role": "delivery-coordinator",
+      "project_membership_status": "NOT_VERIFIED",
+      "module_mapping_revision": "r15.3",
+      "suggested_project_fields": {
+        "Module": "AREA-WEB-ACCOUNT",
+        "Domain": "WEB",
+        "Priority": "P1",
+        "Status": "Todo"
+      },
+      "suggested_labels": [
+        "odelix-delivery",
+        "module:AREA-WEB-ACCOUNT"
+      ],
+      "documentation_revision": "r15.11",
+      "target_binding_policy": "RESOLVE_FROM_ACTUAL_REPO_BINDING_PERSONAL_OR_ORG_NOT_A_PREREQUISITE",
+      "admission": {
+        "code_dependencies": [
+          "ODX-WEB-003",
+          "ODX-PRD-012",
+          "ODX-PRD-013"
+        ],
+        "environment": "LOCAL_OR_ISOLATED_TEST_BY_DEFAULT",
+        "production_authorization": "EXPLICIT_SEPARATE_GRANT",
+        "evidence_status": "NOT_EVALUATED_IN_BUNDLE"
+      },
+      "decision_status": "PROPOSED",
+      "implementation_status": "NOT_VERIFIED",
+      "primary_module_name": "Account and onboarding",
+      "snapshot_note": "READ_ONLY_DERIVED_TASK: links in original body converted to logical references; use module_spec_path within this repo. Work/acceptance match canonical current task; prior-to-current differences are in the migration registry."
+    },
+    {
+      "id": "ODX-WEB-005",
+      "short_id": "WEB-005",
+      "title": "Собрать Research Builder: inputs,formula,target,entry и exit",
+      "repository": "odelix-web",
+      "target_repository": "odelix-web",
+      "domain": "WEB",
+      "wave": 4,
+      "lane": "B",
+      "priority": "P1",
+      "kind": "CORE",
+      "status": "PROPOSED_RECONCILE_EXISTING_FIRST",
+      "suggested_project_status": "Todo",
+      "module": "WEB-STRATEGY-LAB",
+      "depends_on": [
+        "ODX-WKS-004",
+        "ODX-PRD-017"
+      ],
+      "sources": [
+        "REACT",
+        "TANSTACK",
+        "R15"
+      ],
+      "modes": [
+        "PACKAGE_INTEGRATION",
+        "NEW"
+      ],
+      "paths": [
+        "apps/web/src/features/research-builder/",
+        "apps/web/tests/research-draft.spec.ts"
+      ],
+      "work": [
+        "Импортировать SpecEditor/WKS objects и generated Research client.",
+        "Добавить separate modes Indicator/Relationship/Strategy; формы inputs/time semantics/target и independent entry/exit.",
+        "Показать unresolved parameters,DataCapabilityReport и unsupported operators; AI предложения требуют draft acceptance."
+      ],
+      "acceptance": [
+        "Relation mode не требует financial position.",
+        "Смена input/exit показывает diff и новую версию.",
+        "Кнопка run недоступна для invalid/unresolved spec.",
+        "Нет предустановленной авторской формулы как required strategy."
+      ],
+      "test_path": "apps/web/tests/research-draft.spec.ts",
+      "external_gate": "",
+      "old_package": "PAR-WEB-03",
+      "source_destination_decision": "",
+      "non_goals": "",
+      "github_issue_url": null,
+      "owner_base_commit": null,
+      "path_status": "PROPOSED_DESTINATION_RECONCILE_WITH_CURRENT_REPOSITORY",
+      "body_path": null,
+      "body": "<!-- odelix-planned-id: ODX-WEB-005 -->\n# [ODX-WEB-005] Собрать Research Builder: inputs,formula,target,entry и exit\n\n**Редакция:** r15.11 / Issue Pack 0.6.1 · **Статус плана:** PROPOSED / RECONCILE_EXISTING_FIRST.\n\n**Repository:** `odelix-web` · **Module:** `WEB-STRATEGY-LAB` · **Kind:** `MODULE`  \n**Domain:** `WEB` · **Priority:** `P1` · **Волна:** 4 · **Рабочая полоса:** B  \n**Затронутые модули:** Нет дополнительных  \n**Спецификация:** `odelix-web/modules/strategy-lab/MODULE.md`  \n**Repo Lead:** `repo-lead:odelix-web` · **Общий Project:** Odelix Delivery, `delivery-coordinator` в odelix-stack.\n\nЛогическое имя repo не определяет владельца GitHub. Фактические URL, visibility, Project ID и полномочия читаются из текущей конфигурации; личный аккаунт допустим, transfer не prerequisite. Одна каноническая Issue добавляется в Project ссылкой, не копируется.\n\n## Ожидаемый результат\n\nСобрать Research Builder: inputs,formula,target,entry и exit. \n\n## Зависимости и допуск\n\n`ODX-WKS-004`, `ODX-PRD-017`\n\nПоле `depends_on` задаёт предшественников конкретного scope. Завершение кода не разрешает production. Контракты и изолированные fixtures допускают локальную разработку до runtime-интеграции. Условные/операционные действия выполняются только после своего grant и доказанных prerequisites.\n\n- **environment:** LOCAL_OR_ISOLATED_TEST_BY_DEFAULT\n- **production_authorization:** EXPLICIT_SEPARATE_GRANT\n- **evidence_status:** NOT_EVALUATED_IN_BUNDLE\n\n## Исходный код, сервисы и заимствования\n\n- **REACT — React + TypeScript + Next.js:** Выбранная web-native клиентская основа r13; Next.js только shell/routing/BFF без копии бизнес-правил Product. Версии фиксируются в bootstrap owner repo. Ref: `https://nextjs.org/docs`. Pin: `NOT_SELECTED`.\n- **TANSTACK — TanStack Query:** Client cache и invalidation. Не authoritative object store и не дополнительная очередь write-команд. Ref: `https://tanstack.com/query/latest`. Pin: `NOT_SELECTED`.\n- **R15 — Решение Workstation-first r15:** Историческое Workstation-first решение r15; текущая согласованная очередь r15.6/Issue Pack0.4.0. Не runtime evidence. Ref: `../odelix-stack/docs/DELIVERY-ROADMAP.md`. Pin: `r15-design`.\n\nДля ETAPE/OPENBB pin означает SELECTED_SOURCE_REVISION, а не installed package. Остальные исторические pins — provenance, не current HEAD. Фактические bytes, license/NOTICE и dependency lock проверяются в source-intake задаче.\n\n## Целевые пути\n\n```text\nodelix-web/\n  apps/web/src/features/research-builder/\n  apps/web/tests/research-draft.spec.ts\n```\n\nСначала найти существующий эквивалент; не создавать дубликат. HFTJRN02 и его история не переписываются.\n\n## Работы\n\n1. Импортировать SpecEditor/WKS objects и generated Research client.\n2. Добавить separate modes Indicator/Relationship/Strategy; формы inputs/time semantics/target и independent entry/exit.\n3. Показать unresolved parameters,DataCapabilityReport и unsupported operators; AI предложения требуют draft acceptance.\n\n## Критерии приёмки\n\n- [ ] Relation mode не требует financial position.\n- [ ] Смена input/exit показывает diff и новую версию.\n- [ ] Кнопка run недоступна для invalid/unresolved spec.\n- [ ] Нет предустановленной авторской формулы как required strategy.\n\n## Проверка\n\nПредлагаемый test target: `apps/web/tests/research-draft.spec.ts`. Команду определить по текущему коду. Эта карточка не содержит заявления, что тест выполнен.\n\nДля scope рыночных серий независимы: предметная семантика; совпадение live/replay/recovery при одинаковых inputs/cut/definition; ограниченная стоимость. Для прочих scopes применяются их собственные положительные, отрицательные и failure-проверки.\n\n## Не входит\n\nНезаявленные изменения вне разрешённого scope.\n\n## Завершение и полномочия\n\nСначала сопоставить существующие Issues (включая A0/M-87); не сбрасывать Done/history и не создавать дубли. Отдельный branch/worktree, явные write scopes, независимый reviewer. Общие contracts/lockfiles/migrations не дают фиктивной параллельности. Глобально три build/review scope; самостоятельная кодовая интеграция занимает тот же ресурс.\n\nВ исходной Issue сохранить base/result commits, exact tests, failed/not-run, artifacts, reviewer и следующий допустимый шаг. Доску обновляет назначенный Coordinator, сохраняя human override. Пакет не создаёт аккаунты, не настраивает GitHub и не разрешает purchases/deployment/финансовые действия.\n",
+      "source_refs": [
+        {
+          "id": "REACT",
+          "name": "React + TypeScript + Next.js",
+          "kind": "LIBRARY",
+          "ref": "https://nextjs.org/docs",
+          "detail": "Выбранная web-native клиентская основа r13; Next.js только shell/routing/BFF без копии бизнес-правил Product. Версии фиксируются в bootstrap owner repo.",
+          "pin": null,
+          "external": true
+        },
+        {
+          "id": "TANSTACK",
+          "name": "TanStack Query",
+          "kind": "LIBRARY",
+          "ref": "https://tanstack.com/query/latest",
+          "detail": "Client cache и invalidation. Не authoritative object store и не дополнительная очередь write-команд.",
+          "pin": null,
+          "external": true
+        },
+        {
+          "id": "R15",
+          "name": "Решение Workstation-first r15",
+          "kind": "PROJECT_SPEC",
+          "ref": "../odelix-stack/docs/DELIVERY-ROADMAP.md",
+          "detail": "Историческое Workstation-first решение r15; текущая согласованная очередь r15.6/Issue Pack0.4.0. Не runtime evidence.",
+          "pin": "r15-design",
+          "external": false
+        }
+      ],
+      "test_execution_status": "NOT_RUN_PLANNING_ONLY",
+      "previous_wave_r14": 5,
+      "phase_r15": "Пользовательские зависимости; Hosted PAPER, generic resilience и Node demand",
+      "plan_version": "0.6.1",
+      "binding_note": "Фактический GitHub status/URL проверяется Coordinator; не создавать дубликат.",
+      "original_body_sha256": "b304f19dfa5a9c52c30e7d790b71eb3167efaac80924bf9a2f3c22834e74152e",
+      "primary_module_id": "WEB-STRATEGY-LAB",
+      "affected_module_ids": [],
+      "module_kind": "MODULE",
+      "module_spec_path": "modules/strategy-lab/MODULE.md",
+      "module_legacy": "Web Research UX",
+      "component": "Собрать Research Builder: inputs,formula,target,entry и exit",
+      "module_assignment_status": "DOCUMENTED_MAPPING_REPO_LEAD_CONFIRMATION_REQUIRED",
+      "repo_lead_role": "repo-lead:odelix-web",
+      "project_coordinator_role": "delivery-coordinator",
+      "project_membership_status": "NOT_VERIFIED",
+      "module_mapping_revision": "r15.3",
+      "suggested_project_fields": {
+        "Module": "WEB-STRATEGY-LAB",
+        "Domain": "WEB",
+        "Priority": "P1",
+        "Status": "Todo"
+      },
+      "suggested_labels": [
+        "odelix-delivery",
+        "module:WEB-STRATEGY-LAB"
+      ],
+      "documentation_revision": "r15.11",
+      "target_binding_policy": "RESOLVE_FROM_ACTUAL_REPO_BINDING_PERSONAL_OR_ORG_NOT_A_PREREQUISITE",
+      "admission": {
+        "code_dependencies": [
+          "ODX-WKS-004",
+          "ODX-PRD-017"
+        ],
+        "environment": "LOCAL_OR_ISOLATED_TEST_BY_DEFAULT",
+        "production_authorization": "EXPLICIT_SEPARATE_GRANT",
+        "evidence_status": "NOT_EVALUATED_IN_BUNDLE"
+      },
+      "decision_status": "PROPOSED",
+      "implementation_status": "NOT_VERIFIED",
+      "primary_module_name": "strategy-lab",
+      "snapshot_note": "READ_ONLY_DERIVED_TASK: links in original body converted to logical references; use module_spec_path within this repo. Work/acceptance match canonical current task; prior-to-current differences are in the migration registry."
+    },
+    {
+      "id": "ODX-WEB-006",
+      "short_id": "WEB-006",
+      "title": "Добавить Experiment launch/progress/results UX",
+      "repository": "odelix-web",
+      "target_repository": "odelix-web",
+      "domain": "WEB",
+      "wave": 4,
+      "lane": "B",
+      "priority": "P1",
+      "kind": "CORE",
+      "status": "PROPOSED_RECONCILE_EXISTING_FIRST",
+      "suggested_project_status": "Todo",
+      "module": "WEB-STRATEGY-LAB",
+      "depends_on": [
+        "ODX-WEB-005",
+        "ODX-PRD-018"
+      ],
+      "sources": [
+        "REACT",
+        "R15"
+      ],
+      "modes": [
+        "NEW"
+      ],
+      "paths": [
+        "apps/web/src/features/experiments/",
+        "apps/web/tests/experiment-lifecycle.spec.ts"
+      ],
+      "work": [
+        "Показать frozen protocol/budget/data before start, затем progress,cancel и durable result links.",
+        "Развести metric modes relationship vs strategy и SYNTHETIC/MODELLED/HISTORICAL/PAPER labels.",
+        "Показывать every trial,failed/skipped rows и missing-data причины."
+      ],
+      "acceptance": [
+        "Refresh/reconnect открывает тот же experiment.",
+        "Повторный click не удваивает trial.",
+        "Failed/negative результат сохраняется и доступен.",
+        "Данные и label источника видны рядом с result."
+      ],
+      "test_path": "apps/web/tests/experiment-lifecycle.spec.ts",
+      "external_gate": "",
+      "old_package": "PAR-WEB-03",
+      "source_destination_decision": "",
+      "non_goals": "",
+      "github_issue_url": null,
+      "owner_base_commit": null,
+      "path_status": "PROPOSED_DESTINATION_RECONCILE_WITH_CURRENT_REPOSITORY",
+      "body_path": null,
+      "body": "<!-- odelix-planned-id: ODX-WEB-006 -->\n# [ODX-WEB-006] Добавить Experiment launch/progress/results UX\n\n**Редакция:** r15.11 / Issue Pack 0.6.1 · **Статус плана:** PROPOSED / RECONCILE_EXISTING_FIRST.\n\n**Repository:** `odelix-web` · **Module:** `WEB-STRATEGY-LAB` · **Kind:** `MODULE`  \n**Domain:** `WEB` · **Priority:** `P1` · **Волна:** 4 · **Рабочая полоса:** B  \n**Затронутые модули:** Нет дополнительных  \n**Спецификация:** `odelix-web/modules/strategy-lab/MODULE.md`  \n**Repo Lead:** `repo-lead:odelix-web` · **Общий Project:** Odelix Delivery, `delivery-coordinator` в odelix-stack.\n\nЛогическое имя repo не определяет владельца GitHub. Фактические URL, visibility, Project ID и полномочия читаются из текущей конфигурации; личный аккаунт допустим, transfer не prerequisite. Одна каноническая Issue добавляется в Project ссылкой, не копируется.\n\n## Ожидаемый результат\n\nДобавить Experiment launch/progress/results UX. \n\n## Зависимости и допуск\n\n`ODX-WEB-005`, `ODX-PRD-018`\n\nПоле `depends_on` задаёт предшественников конкретного scope. Завершение кода не разрешает production. Контракты и изолированные fixtures допускают локальную разработку до runtime-интеграции. Условные/операционные действия выполняются только после своего grant и доказанных prerequisites.\n\n- **environment:** LOCAL_OR_ISOLATED_TEST_BY_DEFAULT\n- **production_authorization:** EXPLICIT_SEPARATE_GRANT\n- **evidence_status:** NOT_EVALUATED_IN_BUNDLE\n\n## Исходный код, сервисы и заимствования\n\n- **REACT — React + TypeScript + Next.js:** Выбранная web-native клиентская основа r13; Next.js только shell/routing/BFF без копии бизнес-правил Product. Версии фиксируются в bootstrap owner repo. Ref: `https://nextjs.org/docs`. Pin: `NOT_SELECTED`.\n- **R15 — Решение Workstation-first r15:** Историческое Workstation-first решение r15; текущая согласованная очередь r15.6/Issue Pack0.4.0. Не runtime evidence. Ref: `../odelix-stack/docs/DELIVERY-ROADMAP.md`. Pin: `r15-design`.\n\nДля ETAPE/OPENBB pin означает SELECTED_SOURCE_REVISION, а не installed package. Остальные исторические pins — provenance, не current HEAD. Фактические bytes, license/NOTICE и dependency lock проверяются в source-intake задаче.\n\n## Целевые пути\n\n```text\nodelix-web/\n  apps/web/src/features/experiments/\n  apps/web/tests/experiment-lifecycle.spec.ts\n```\n\nСначала найти существующий эквивалент; не создавать дубликат. HFTJRN02 и его история не переписываются.\n\n## Работы\n\n1. Показать frozen protocol/budget/data before start, затем progress,cancel и durable result links.\n2. Развести metric modes relationship vs strategy и SYNTHETIC/MODELLED/HISTORICAL/PAPER labels.\n3. Показывать every trial,failed/skipped rows и missing-data причины.\n\n## Критерии приёмки\n\n- [ ] Refresh/reconnect открывает тот же experiment.\n- [ ] Повторный click не удваивает trial.\n- [ ] Failed/negative результат сохраняется и доступен.\n- [ ] Данные и label источника видны рядом с result.\n\n## Проверка\n\nПредлагаемый test target: `apps/web/tests/experiment-lifecycle.spec.ts`. Команду определить по текущему коду. Эта карточка не содержит заявления, что тест выполнен.\n\nДля scope рыночных серий независимы: предметная семантика; совпадение live/replay/recovery при одинаковых inputs/cut/definition; ограниченная стоимость. Для прочих scopes применяются их собственные положительные, отрицательные и failure-проверки.\n\n## Не входит\n\nНезаявленные изменения вне разрешённого scope.\n\n## Завершение и полномочия\n\nСначала сопоставить существующие Issues (включая A0/M-87); не сбрасывать Done/history и не создавать дубли. Отдельный branch/worktree, явные write scopes, независимый reviewer. Общие contracts/lockfiles/migrations не дают фиктивной параллельности. Глобально три build/review scope; самостоятельная кодовая интеграция занимает тот же ресурс.\n\nВ исходной Issue сохранить base/result commits, exact tests, failed/not-run, artifacts, reviewer и следующий допустимый шаг. Доску обновляет назначенный Coordinator, сохраняя human override. Пакет не создаёт аккаунты, не настраивает GitHub и не разрешает purchases/deployment/финансовые действия.\n",
+      "source_refs": [
+        {
+          "id": "REACT",
+          "name": "React + TypeScript + Next.js",
+          "kind": "LIBRARY",
+          "ref": "https://nextjs.org/docs",
+          "detail": "Выбранная web-native клиентская основа r13; Next.js только shell/routing/BFF без копии бизнес-правил Product. Версии фиксируются в bootstrap owner repo.",
+          "pin": null,
+          "external": true
+        },
+        {
+          "id": "R15",
+          "name": "Решение Workstation-first r15",
+          "kind": "PROJECT_SPEC",
+          "ref": "../odelix-stack/docs/DELIVERY-ROADMAP.md",
+          "detail": "Историческое Workstation-first решение r15; текущая согласованная очередь r15.6/Issue Pack0.4.0. Не runtime evidence.",
+          "pin": "r15-design",
+          "external": false
+        }
+      ],
+      "test_execution_status": "NOT_RUN_PLANNING_ONLY",
+      "previous_wave_r14": 5,
+      "phase_r15": "Пользовательские зависимости; Hosted PAPER, generic resilience и Node demand",
+      "plan_version": "0.6.1",
+      "binding_note": "Фактический GitHub status/URL проверяется Coordinator; не создавать дубликат.",
+      "original_body_sha256": "a601fb0df2e453153cbf7565ebc810741707a29fce3ecfd03b5a1ad29fc6a656",
+      "primary_module_id": "WEB-STRATEGY-LAB",
+      "affected_module_ids": [],
+      "module_kind": "MODULE",
+      "module_spec_path": "modules/strategy-lab/MODULE.md",
+      "module_legacy": "Web Experiments",
+      "component": "Добавить Experiment launch/progress/results UX",
+      "module_assignment_status": "DOCUMENTED_MAPPING_REPO_LEAD_CONFIRMATION_REQUIRED",
+      "repo_lead_role": "repo-lead:odelix-web",
+      "project_coordinator_role": "delivery-coordinator",
+      "project_membership_status": "NOT_VERIFIED",
+      "module_mapping_revision": "r15.3",
+      "suggested_project_fields": {
+        "Module": "WEB-STRATEGY-LAB",
+        "Domain": "WEB",
+        "Priority": "P1",
+        "Status": "Todo"
+      },
+      "suggested_labels": [
+        "odelix-delivery",
+        "module:WEB-STRATEGY-LAB"
+      ],
+      "documentation_revision": "r15.11",
+      "target_binding_policy": "RESOLVE_FROM_ACTUAL_REPO_BINDING_PERSONAL_OR_ORG_NOT_A_PREREQUISITE",
+      "admission": {
+        "code_dependencies": [
+          "ODX-WEB-005",
+          "ODX-PRD-018"
+        ],
+        "environment": "LOCAL_OR_ISOLATED_TEST_BY_DEFAULT",
+        "production_authorization": "EXPLICIT_SEPARATE_GRANT",
+        "evidence_status": "NOT_EVALUATED_IN_BUNDLE"
+      },
+      "decision_status": "PROPOSED",
+      "implementation_status": "NOT_VERIFIED",
+      "primary_module_name": "strategy-lab",
+      "snapshot_note": "READ_ONLY_DERIVED_TASK: links in original body converted to logical references; use module_spec_path within this repo. Work/acceptance match canonical current task; prior-to-current differences are in the migration registry."
+    },
+    {
+      "id": "ODX-WEB-007",
+      "short_id": "WEB-007",
+      "title": "Сделать Compare для формул,input и независимых exits",
+      "repository": "odelix-web",
+      "target_repository": "odelix-web",
+      "domain": "WEB",
+      "wave": 5,
+      "lane": "B",
+      "priority": "P1",
+      "kind": "CORE",
+      "status": "PROPOSED_RECONCILE_EXISTING_FIRST",
+      "suggested_project_status": "Todo",
+      "module": "WEB-STRATEGY-LAB",
+      "depends_on": [
+        "ODX-WEB-006",
+        "ODX-PRD-019"
+      ],
+      "sources": [
+        "REACT",
+        "TANSTACK",
+        "R15"
+      ],
+      "modes": [
+        "NEW"
+      ],
+      "paths": [
+        "apps/web/src/features/experiment-compare/",
+        "apps/web/tests/compare-variants.spec.ts"
+      ],
+      "work": [
+        "Сравнивать spec/data/code/split/cost differences рядом с результатом; один общий eligible sample и фактический subset показывать отдельно.",
+        "Добавить отношение effect/uncertainty/sample count для relation; applicable P&L/cost/drawdown для strategy.",
+        "Показывать все attempted variants и причины skipped/failed, не только лучший output."
+      ],
+      "acceptance": [
+        "При разных datasets/splits сравнение помечается несопоставимым.",
+        "Missing данные не рисуются нулевой доходностью.",
+        "Изменение только exit отражено в diff.",
+        "User может открыть любой failed/negative trial."
+      ],
+      "test_path": "apps/web/tests/compare-variants.spec.ts",
+      "external_gate": "",
+      "old_package": "PAR-WEB-04",
+      "source_destination_decision": "",
+      "non_goals": "",
+      "github_issue_url": null,
+      "owner_base_commit": null,
+      "path_status": "PROPOSED_DESTINATION_RECONCILE_WITH_CURRENT_REPOSITORY",
+      "body_path": null,
+      "body": "<!-- odelix-planned-id: ODX-WEB-007 -->\n# [ODX-WEB-007] Сделать Compare для формул,input и независимых exits\n\n**Редакция:** r15.11 / Issue Pack 0.6.1 · **Статус плана:** PROPOSED / RECONCILE_EXISTING_FIRST.\n\n**Repository:** `odelix-web` · **Module:** `WEB-STRATEGY-LAB` · **Kind:** `MODULE`  \n**Domain:** `WEB` · **Priority:** `P1` · **Волна:** 5 · **Рабочая полоса:** B  \n**Затронутые модули:** Нет дополнительных  \n**Спецификация:** `odelix-web/modules/strategy-lab/MODULE.md`  \n**Repo Lead:** `repo-lead:odelix-web` · **Общий Project:** Odelix Delivery, `delivery-coordinator` в odelix-stack.\n\nЛогическое имя repo не определяет владельца GitHub. Фактические URL, visibility, Project ID и полномочия читаются из текущей конфигурации; личный аккаунт допустим, transfer не prerequisite. Одна каноническая Issue добавляется в Project ссылкой, не копируется.\n\n## Ожидаемый результат\n\nСделать Compare для формул,input и независимых exits. \n\n## Зависимости и допуск\n\n`ODX-WEB-006`, `ODX-PRD-019`\n\nПоле `depends_on` задаёт предшественников конкретного scope. Завершение кода не разрешает production. Контракты и изолированные fixtures допускают локальную разработку до runtime-интеграции. Условные/операционные действия выполняются только после своего grant и доказанных prerequisites.\n\n- **environment:** LOCAL_OR_ISOLATED_TEST_BY_DEFAULT\n- **production_authorization:** EXPLICIT_SEPARATE_GRANT\n- **evidence_status:** NOT_EVALUATED_IN_BUNDLE\n\n## Исходный код, сервисы и заимствования\n\n- **REACT — React + TypeScript + Next.js:** Выбранная web-native клиентская основа r13; Next.js только shell/routing/BFF без копии бизнес-правил Product. Версии фиксируются в bootstrap owner repo. Ref: `https://nextjs.org/docs`. Pin: `NOT_SELECTED`.\n- **TANSTACK — TanStack Query:** Client cache и invalidation. Не authoritative object store и не дополнительная очередь write-команд. Ref: `https://tanstack.com/query/latest`. Pin: `NOT_SELECTED`.\n- **R15 — Решение Workstation-first r15:** Историческое Workstation-first решение r15; текущая согласованная очередь r15.6/Issue Pack0.4.0. Не runtime evidence. Ref: `../odelix-stack/docs/DELIVERY-ROADMAP.md`. Pin: `r15-design`.\n\nДля ETAPE/OPENBB pin означает SELECTED_SOURCE_REVISION, а не installed package. Остальные исторические pins — provenance, не current HEAD. Фактические bytes, license/NOTICE и dependency lock проверяются в source-intake задаче.\n\n## Целевые пути\n\n```text\nodelix-web/\n  apps/web/src/features/experiment-compare/\n  apps/web/tests/compare-variants.spec.ts\n```\n\nСначала найти существующий эквивалент; не создавать дубликат. HFTJRN02 и его история не переписываются.\n\n## Работы\n\n1. Сравнивать spec/data/code/split/cost differences рядом с результатом; один общий eligible sample и фактический subset показывать отдельно.\n2. Добавить отношение effect/uncertainty/sample count для relation; applicable P&L/cost/drawdown для strategy.\n3. Показывать все attempted variants и причины skipped/failed, не только лучший output.\n\n## Критерии приёмки\n\n- [ ] При разных datasets/splits сравнение помечается несопоставимым.\n- [ ] Missing данные не рисуются нулевой доходностью.\n- [ ] Изменение только exit отражено в diff.\n- [ ] User может открыть любой failed/negative trial.\n\n## Проверка\n\nПредлагаемый test target: `apps/web/tests/compare-variants.spec.ts`. Команду определить по текущему коду. Эта карточка не содержит заявления, что тест выполнен.\n\nДля scope рыночных серий независимы: предметная семантика; совпадение live/replay/recovery при одинаковых inputs/cut/definition; ограниченная стоимость. Для прочих scopes применяются их собственные положительные, отрицательные и failure-проверки.\n\n## Не входит\n\nНезаявленные изменения вне разрешённого scope.\n\n## Завершение и полномочия\n\nСначала сопоставить существующие Issues (включая A0/M-87); не сбрасывать Done/history и не создавать дубли. Отдельный branch/worktree, явные write scopes, независимый reviewer. Общие contracts/lockfiles/migrations не дают фиктивной параллельности. Глобально три build/review scope; самостоятельная кодовая интеграция занимает тот же ресурс.\n\nВ исходной Issue сохранить base/result commits, exact tests, failed/not-run, artifacts, reviewer и следующий допустимый шаг. Доску обновляет назначенный Coordinator, сохраняя human override. Пакет не создаёт аккаунты, не настраивает GitHub и не разрешает purchases/deployment/финансовые действия.\n",
+      "source_refs": [
+        {
+          "id": "REACT",
+          "name": "React + TypeScript + Next.js",
+          "kind": "LIBRARY",
+          "ref": "https://nextjs.org/docs",
+          "detail": "Выбранная web-native клиентская основа r13; Next.js только shell/routing/BFF без копии бизнес-правил Product. Версии фиксируются в bootstrap owner repo.",
+          "pin": null,
+          "external": true
+        },
+        {
+          "id": "TANSTACK",
+          "name": "TanStack Query",
+          "kind": "LIBRARY",
+          "ref": "https://tanstack.com/query/latest",
+          "detail": "Client cache и invalidation. Не authoritative object store и не дополнительная очередь write-команд.",
+          "pin": null,
+          "external": true
+        },
+        {
+          "id": "R15",
+          "name": "Решение Workstation-first r15",
+          "kind": "PROJECT_SPEC",
+          "ref": "../odelix-stack/docs/DELIVERY-ROADMAP.md",
+          "detail": "Историческое Workstation-first решение r15; текущая согласованная очередь r15.6/Issue Pack0.4.0. Не runtime evidence.",
+          "pin": "r15-design",
+          "external": false
+        }
+      ],
+      "test_execution_status": "NOT_RUN_PLANNING_ONLY",
+      "previous_wave_r14": 6,
+      "phase_r15": "Историческая валидация; Research PAPER и условный portable Node",
+      "plan_version": "0.6.1",
+      "binding_note": "Фактический GitHub status/URL проверяется Coordinator; не создавать дубликат.",
+      "original_body_sha256": "d92f6fee08841bab637d649136dfa58b59e3aa429758fa026470b11ae3e9661b",
+      "primary_module_id": "WEB-STRATEGY-LAB",
+      "affected_module_ids": [],
+      "module_kind": "MODULE",
+      "module_spec_path": "modules/strategy-lab/MODULE.md",
+      "module_legacy": "Web Research Compare",
+      "component": "Сделать Compare для формул,input и независимых exits",
+      "module_assignment_status": "DOCUMENTED_MAPPING_REPO_LEAD_CONFIRMATION_REQUIRED",
+      "repo_lead_role": "repo-lead:odelix-web",
+      "project_coordinator_role": "delivery-coordinator",
+      "project_membership_status": "NOT_VERIFIED",
+      "module_mapping_revision": "r15.3",
+      "suggested_project_fields": {
+        "Module": "WEB-STRATEGY-LAB",
+        "Domain": "WEB",
+        "Priority": "P1",
+        "Status": "Todo"
+      },
+      "suggested_labels": [
+        "odelix-delivery",
+        "module:WEB-STRATEGY-LAB"
+      ],
+      "documentation_revision": "r15.11",
+      "target_binding_policy": "RESOLVE_FROM_ACTUAL_REPO_BINDING_PERSONAL_OR_ORG_NOT_A_PREREQUISITE",
+      "admission": {
+        "code_dependencies": [
+          "ODX-WEB-006",
+          "ODX-PRD-019"
+        ],
+        "environment": "LOCAL_OR_ISOLATED_TEST_BY_DEFAULT",
+        "production_authorization": "EXPLICIT_SEPARATE_GRANT",
+        "evidence_status": "NOT_EVALUATED_IN_BUNDLE"
+      },
+      "decision_status": "PROPOSED",
+      "implementation_status": "NOT_VERIFIED",
+      "primary_module_name": "strategy-lab",
+      "snapshot_note": "READ_ONLY_DERIVED_TASK: links in original body converted to logical references; use module_spec_path within this repo. Work/acceptance match canonical current task; prior-to-current differences are in the migration registry."
+    },
+    {
+      "id": "ODX-WEB-008",
+      "short_id": "WEB-008",
+      "title": "Добавить Research Passport/export и возврат к source context",
+      "repository": "odelix-web",
+      "target_repository": "odelix-web",
+      "domain": "WEB",
+      "wave": 5,
+      "lane": "B",
+      "priority": "P1",
+      "kind": "CORE",
+      "status": "PROPOSED_RECONCILE_EXISTING_FIRST",
+      "suggested_project_status": "Todo",
+      "module": "WEB-STRATEGY-LAB",
+      "depends_on": [
+        "ODX-WEB-007",
+        "ODX-PRD-018",
+        "ODX-HAR-011"
+      ],
+      "sources": [
+        "REACT",
+        "R15"
+      ],
+      "modes": [
+        "NEW"
+      ],
+      "paths": [
+        "apps/web/src/features/research-passport/",
+        "apps/web/tests/research-export.spec.ts"
+      ],
+      "work": [
+        "Сформировать view version/spec/data/engine/validation refs,provenance,limitations и accepted decisions.",
+        "Запрашивать export у Product с rights/tenant checks; недоступные raw data заменять разрешёнными refs, не обходить лицензию.",
+        "Связать passport с original Scene/Thesis и отдельным fork новой revision."
+      ],
+      "acceptance": [
+        "Export не содержит keys/private prompts/чужих объектов.",
+        "Получатель fork не наследует права автора.",
+        "Downloaded package маркирует omitted data и воспроизводимость.",
+        "Reopen возвращает исходный context version, не текущие изменённые quotes."
+      ],
+      "test_path": "apps/web/tests/research-export.spec.ts",
+      "external_gate": "",
+      "old_package": "PAR-WEB-04",
+      "source_destination_decision": "",
+      "non_goals": "",
+      "github_issue_url": null,
+      "owner_base_commit": null,
+      "path_status": "PROPOSED_DESTINATION_RECONCILE_WITH_CURRENT_REPOSITORY",
+      "body_path": null,
+      "body": "<!-- odelix-planned-id: ODX-WEB-008 -->\n# [ODX-WEB-008] Добавить Research Passport/export и возврат к source context\n\n**Редакция:** r15.11 / Issue Pack 0.6.1 · **Статус плана:** PROPOSED / RECONCILE_EXISTING_FIRST.\n\n**Repository:** `odelix-web` · **Module:** `WEB-STRATEGY-LAB` · **Kind:** `MODULE`  \n**Domain:** `WEB` · **Priority:** `P1` · **Волна:** 5 · **Рабочая полоса:** B  \n**Затронутые модули:** Нет дополнительных  \n**Спецификация:** `odelix-web/modules/strategy-lab/MODULE.md`  \n**Repo Lead:** `repo-lead:odelix-web` · **Общий Project:** Odelix Delivery, `delivery-coordinator` в odelix-stack.\n\nЛогическое имя repo не определяет владельца GitHub. Фактические URL, visibility, Project ID и полномочия читаются из текущей конфигурации; личный аккаунт допустим, transfer не prerequisite. Одна каноническая Issue добавляется в Project ссылкой, не копируется.\n\n## Ожидаемый результат\n\nДобавить Research Passport/export и возврат к source context. \n\n## Зависимости и допуск\n\n`ODX-WEB-007`, `ODX-PRD-018`, `ODX-HAR-011`\n\nПоле `depends_on` задаёт предшественников конкретного scope. Завершение кода не разрешает production. Контракты и изолированные fixtures допускают локальную разработку до runtime-интеграции. Условные/операционные действия выполняются только после своего grant и доказанных prerequisites.\n\n- **environment:** LOCAL_OR_ISOLATED_TEST_BY_DEFAULT\n- **production_authorization:** EXPLICIT_SEPARATE_GRANT\n- **evidence_status:** NOT_EVALUATED_IN_BUNDLE\n\n## Исходный код, сервисы и заимствования\n\n- **REACT — React + TypeScript + Next.js:** Выбранная web-native клиентская основа r13; Next.js только shell/routing/BFF без копии бизнес-правил Product. Версии фиксируются в bootstrap owner repo. Ref: `https://nextjs.org/docs`. Pin: `NOT_SELECTED`.\n- **R15 — Решение Workstation-first r15:** Историческое Workstation-first решение r15; текущая согласованная очередь r15.6/Issue Pack0.4.0. Не runtime evidence. Ref: `../odelix-stack/docs/DELIVERY-ROADMAP.md`. Pin: `r15-design`.\n\nДля ETAPE/OPENBB pin означает SELECTED_SOURCE_REVISION, а не installed package. Остальные исторические pins — provenance, не current HEAD. Фактические bytes, license/NOTICE и dependency lock проверяются в source-intake задаче.\n\n## Целевые пути\n\n```text\nodelix-web/\n  apps/web/src/features/research-passport/\n  apps/web/tests/research-export.spec.ts\n```\n\nСначала найти существующий эквивалент; не создавать дубликат. HFTJRN02 и его история не переписываются.\n\n## Работы\n\n1. Сформировать view version/spec/data/engine/validation refs,provenance,limitations и accepted decisions.\n2. Запрашивать export у Product с rights/tenant checks; недоступные raw data заменять разрешёнными refs, не обходить лицензию.\n3. Связать passport с original Scene/Thesis и отдельным fork новой revision.\n\n## Критерии приёмки\n\n- [ ] Export не содержит keys/private prompts/чужих объектов.\n- [ ] Получатель fork не наследует права автора.\n- [ ] Downloaded package маркирует omitted data и воспроизводимость.\n- [ ] Reopen возвращает исходный context version, не текущие изменённые quotes.\n\n## Проверка\n\nПредлагаемый test target: `apps/web/tests/research-export.spec.ts`. Команду определить по текущему коду. Эта карточка не содержит заявления, что тест выполнен.\n\nДля scope рыночных серий независимы: предметная семантика; совпадение live/replay/recovery при одинаковых inputs/cut/definition; ограниченная стоимость. Для прочих scopes применяются их собственные положительные, отрицательные и failure-проверки.\n\n## Не входит\n\nНезаявленные изменения вне разрешённого scope.\n\n## Завершение и полномочия\n\nСначала сопоставить существующие Issues (включая A0/M-87); не сбрасывать Done/history и не создавать дубли. Отдельный branch/worktree, явные write scopes, независимый reviewer. Общие contracts/lockfiles/migrations не дают фиктивной параллельности. Глобально три build/review scope; самостоятельная кодовая интеграция занимает тот же ресурс.\n\nВ исходной Issue сохранить base/result commits, exact tests, failed/not-run, artifacts, reviewer и следующий допустимый шаг. Доску обновляет назначенный Coordinator, сохраняя human override. Пакет не создаёт аккаунты, не настраивает GitHub и не разрешает purchases/deployment/финансовые действия.\n",
+      "source_refs": [
+        {
+          "id": "REACT",
+          "name": "React + TypeScript + Next.js",
+          "kind": "LIBRARY",
+          "ref": "https://nextjs.org/docs",
+          "detail": "Выбранная web-native клиентская основа r13; Next.js только shell/routing/BFF без копии бизнес-правил Product. Версии фиксируются в bootstrap owner repo.",
+          "pin": null,
+          "external": true
+        },
+        {
+          "id": "R15",
+          "name": "Решение Workstation-first r15",
+          "kind": "PROJECT_SPEC",
+          "ref": "../odelix-stack/docs/DELIVERY-ROADMAP.md",
+          "detail": "Историческое Workstation-first решение r15; текущая согласованная очередь r15.6/Issue Pack0.4.0. Не runtime evidence.",
+          "pin": "r15-design",
+          "external": false
+        }
+      ],
+      "test_execution_status": "NOT_RUN_PLANNING_ONLY",
+      "previous_wave_r14": 6,
+      "phase_r15": "Историческая валидация; Research PAPER и условный portable Node",
+      "plan_version": "0.6.1",
+      "binding_note": "Фактический GitHub status/URL проверяется Coordinator; не создавать дубликат.",
+      "original_body_sha256": "cdb43ce127cdd4a074f75c52e90942a82f58945f6b90d3df834ef3373425594d",
+      "primary_module_id": "WEB-STRATEGY-LAB",
+      "affected_module_ids": [],
+      "module_kind": "MODULE",
+      "module_spec_path": "modules/strategy-lab/MODULE.md",
+      "module_legacy": "Web Research portability",
+      "component": "Добавить Research Passport/export и возврат к source context",
+      "module_assignment_status": "DOCUMENTED_MAPPING_REPO_LEAD_CONFIRMATION_REQUIRED",
+      "repo_lead_role": "repo-lead:odelix-web",
+      "project_coordinator_role": "delivery-coordinator",
+      "project_membership_status": "NOT_VERIFIED",
+      "module_mapping_revision": "r15.3",
+      "suggested_project_fields": {
+        "Module": "WEB-STRATEGY-LAB",
+        "Domain": "WEB",
+        "Priority": "P1",
+        "Status": "Todo"
+      },
+      "suggested_labels": [
+        "odelix-delivery",
+        "module:WEB-STRATEGY-LAB"
+      ],
+      "documentation_revision": "r15.11",
+      "target_binding_policy": "RESOLVE_FROM_ACTUAL_REPO_BINDING_PERSONAL_OR_ORG_NOT_A_PREREQUISITE",
+      "admission": {
+        "code_dependencies": [
+          "ODX-WEB-007",
+          "ODX-PRD-018",
+          "ODX-HAR-011"
+        ],
+        "environment": "LOCAL_OR_ISOLATED_TEST_BY_DEFAULT",
+        "production_authorization": "EXPLICIT_SEPARATE_GRANT",
+        "evidence_status": "NOT_EVALUATED_IN_BUNDLE"
+      },
+      "decision_status": "PROPOSED",
+      "implementation_status": "NOT_VERIFIED",
+      "primary_module_name": "strategy-lab",
+      "snapshot_note": "READ_ONLY_DERIVED_TASK: links in original body converted to logical references; use module_spec_path within this repo. Work/acceptance match canonical current task; prior-to-current differences are in the migration registry."
+    },
+    {
+      "id": "ODX-WEB-009",
+      "short_id": "WEB-009",
+      "title": "Реализовать Paper Positions/Orders/Journal views",
+      "repository": "odelix-web",
+      "target_repository": "odelix-web",
+      "domain": "WEB",
+      "wave": 5,
+      "lane": "B",
+      "priority": "P1",
+      "kind": "CORE",
+      "status": "PROPOSED_RECONCILE_EXISTING_FIRST",
+      "suggested_project_status": "Todo",
+      "module": "AREA-WEB-JOURNAL",
+      "depends_on": [
+        "ODX-WEB-008",
+        "ODX-PRD-021",
+        "ODX-EXE-004"
+      ],
+      "sources": [
+        "REACT",
+        "R15"
+      ],
+      "modes": [
+        "NEW"
+      ],
+      "paths": [
+        "apps/web/src/features/paper/",
+        "apps/web/src/features/journal/",
+        "apps/web/tests/paper-journal.spec.ts"
+      ],
+      "work": [
+        "Показать authoritative paper orders/fills/positions через Product projection,environment badge,lag/gaps и source refs.",
+        "Связать decision snapshot,Thesis,Experiment и outcome без переписывания прежних оснований.",
+        "Различить cancel Run,pause deployment,cancel order и read/reconcile; в UI нет финансового Undo."
+      ],
+      "acceptance": [
+        "Paper и history не суммируются с live performance.",
+        "Lagging projection не скрыта.",
+        "Перезапуск/reconnect сохраняет IDs и события.",
+        "Outcomes не меняют исходный Journal snapshot."
+      ],
+      "test_path": "apps/web/tests/paper-journal.spec.ts",
+      "external_gate": "",
+      "old_package": "PAR-WEB-05",
+      "source_destination_decision": "",
+      "non_goals": "",
+      "github_issue_url": null,
+      "owner_base_commit": null,
+      "path_status": "PROPOSED_DESTINATION_RECONCILE_WITH_CURRENT_REPOSITORY",
+      "body_path": null,
+      "body": "<!-- odelix-planned-id: ODX-WEB-009 -->\n# [ODX-WEB-009] Реализовать Paper Positions/Orders/Journal views\n\n**Редакция:** r15.11 / Issue Pack 0.6.1 · **Статус плана:** PROPOSED / RECONCILE_EXISTING_FIRST.\n\n**Repository:** `odelix-web` · **Module:** `AREA-WEB-JOURNAL` · **Kind:** `DELIVERY_AREA`  \n**Domain:** `WEB` · **Priority:** `P1` · **Волна:** 5 · **Рабочая полоса:** B  \n**Затронутые модули:** Нет дополнительных  \n**Спецификация:** `odelix-web/docs/DEVELOPMENT.md#modules`  \n**Repo Lead:** `repo-lead:odelix-web` · **Общий Project:** Odelix Delivery, `delivery-coordinator` в odelix-stack.\n\nЛогическое имя repo не определяет владельца GitHub. Фактические URL, visibility, Project ID и полномочия читаются из текущей конфигурации; личный аккаунт допустим, transfer не prerequisite. Одна каноническая Issue добавляется в Project ссылкой, не копируется.\n\n## Ожидаемый результат\n\nРеализовать Paper Positions/Orders/Journal views. \n\n## Зависимости и допуск\n\n`ODX-WEB-008`, `ODX-PRD-021`, `ODX-EXE-004`\n\nПоле `depends_on` задаёт предшественников конкретного scope. Завершение кода не разрешает production. Контракты и изолированные fixtures допускают локальную разработку до runtime-интеграции. Условные/операционные действия выполняются только после своего grant и доказанных prerequisites.\n\n- **environment:** LOCAL_OR_ISOLATED_TEST_BY_DEFAULT\n- **production_authorization:** EXPLICIT_SEPARATE_GRANT\n- **evidence_status:** NOT_EVALUATED_IN_BUNDLE\n\n## Исходный код, сервисы и заимствования\n\n- **REACT — React + TypeScript + Next.js:** Выбранная web-native клиентская основа r13; Next.js только shell/routing/BFF без копии бизнес-правил Product. Версии фиксируются в bootstrap owner repo. Ref: `https://nextjs.org/docs`. Pin: `NOT_SELECTED`.\n- **R15 — Решение Workstation-first r15:** Историческое Workstation-first решение r15; текущая согласованная очередь r15.6/Issue Pack0.4.0. Не runtime evidence. Ref: `../odelix-stack/docs/DELIVERY-ROADMAP.md`. Pin: `r15-design`.\n\nДля ETAPE/OPENBB pin означает SELECTED_SOURCE_REVISION, а не installed package. Остальные исторические pins — provenance, не current HEAD. Фактические bytes, license/NOTICE и dependency lock проверяются в source-intake задаче.\n\n## Целевые пути\n\n```text\nodelix-web/\n  apps/web/src/features/paper/\n  apps/web/src/features/journal/\n  apps/web/tests/paper-journal.spec.ts\n```\n\nСначала найти существующий эквивалент; не создавать дубликат. HFTJRN02 и его история не переписываются.\n\n## Работы\n\n1. Показать authoritative paper orders/fills/positions через Product projection,environment badge,lag/gaps и source refs.\n2. Связать decision snapshot,Thesis,Experiment и outcome без переписывания прежних оснований.\n3. Различить cancel Run,pause deployment,cancel order и read/reconcile; в UI нет финансового Undo.\n\n## Критерии приёмки\n\n- [ ] Paper и history не суммируются с live performance.\n- [ ] Lagging projection не скрыта.\n- [ ] Перезапуск/reconnect сохраняет IDs и события.\n- [ ] Outcomes не меняют исходный Journal snapshot.\n\n## Проверка\n\nПредлагаемый test target: `apps/web/tests/paper-journal.spec.ts`. Команду определить по текущему коду. Эта карточка не содержит заявления, что тест выполнен.\n\nДля scope рыночных серий независимы: предметная семантика; совпадение live/replay/recovery при одинаковых inputs/cut/definition; ограниченная стоимость. Для прочих scopes применяются их собственные положительные, отрицательные и failure-проверки.\n\n## Не входит\n\nНезаявленные изменения вне разрешённого scope.\n\n## Завершение и полномочия\n\nСначала сопоставить существующие Issues (включая A0/M-87); не сбрасывать Done/history и не создавать дубли. Отдельный branch/worktree, явные write scopes, независимый reviewer. Общие contracts/lockfiles/migrations не дают фиктивной параллельности. Глобально три build/review scope; самостоятельная кодовая интеграция занимает тот же ресурс.\n\nВ исходной Issue сохранить base/result commits, exact tests, failed/not-run, artifacts, reviewer и следующий допустимый шаг. Доску обновляет назначенный Coordinator, сохраняя human override. Пакет не создаёт аккаунты, не настраивает GitHub и не разрешает purchases/deployment/финансовые действия.\n",
+      "source_refs": [
+        {
+          "id": "REACT",
+          "name": "React + TypeScript + Next.js",
+          "kind": "LIBRARY",
+          "ref": "https://nextjs.org/docs",
+          "detail": "Выбранная web-native клиентская основа r13; Next.js только shell/routing/BFF без копии бизнес-правил Product. Версии фиксируются в bootstrap owner repo.",
+          "pin": null,
+          "external": true
+        },
+        {
+          "id": "R15",
+          "name": "Решение Workstation-first r15",
+          "kind": "PROJECT_SPEC",
+          "ref": "../odelix-stack/docs/DELIVERY-ROADMAP.md",
+          "detail": "Историческое Workstation-first решение r15; текущая согласованная очередь r15.6/Issue Pack0.4.0. Не runtime evidence.",
+          "pin": "r15-design",
+          "external": false
+        }
+      ],
+      "test_execution_status": "NOT_RUN_PLANNING_ONLY",
+      "phase_r15": "Историческая валидация; Research PAPER и условный portable Node",
+      "plan_version": "0.6.1",
+      "binding_note": "Фактический GitHub status/URL проверяется Coordinator; не создавать дубликат.",
+      "original_body_sha256": "919d1c36a6c6fef3943181274fdbcf0eabb3d916866dd3b9cec5296a83095f1c",
+      "primary_module_id": "AREA-WEB-JOURNAL",
+      "affected_module_ids": [],
+      "module_kind": "DELIVERY_AREA",
+      "module_spec_path": "docs/DEVELOPMENT.md#modules",
+      "module_legacy": "Web Paper/Journal",
+      "component": "Реализовать Paper Positions/Orders/Journal views",
+      "module_assignment_status": "DOCUMENTED_MAPPING_REPO_LEAD_CONFIRMATION_REQUIRED",
+      "repo_lead_role": "repo-lead:odelix-web",
+      "project_coordinator_role": "delivery-coordinator",
+      "project_membership_status": "NOT_VERIFIED",
+      "module_mapping_revision": "r15.3",
+      "suggested_project_fields": {
+        "Module": "AREA-WEB-JOURNAL",
+        "Domain": "WEB",
+        "Priority": "P1",
+        "Status": "Todo"
+      },
+      "suggested_labels": [
+        "odelix-delivery",
+        "module:AREA-WEB-JOURNAL"
+      ],
+      "documentation_revision": "r15.11",
+      "target_binding_policy": "RESOLVE_FROM_ACTUAL_REPO_BINDING_PERSONAL_OR_ORG_NOT_A_PREREQUISITE",
+      "admission": {
+        "code_dependencies": [
+          "ODX-WEB-008",
+          "ODX-PRD-021",
+          "ODX-EXE-004"
+        ],
+        "environment": "LOCAL_OR_ISOLATED_TEST_BY_DEFAULT",
+        "production_authorization": "EXPLICIT_SEPARATE_GRANT",
+        "evidence_status": "NOT_EVALUATED_IN_BUNDLE"
+      },
+      "decision_status": "PROPOSED",
+      "implementation_status": "NOT_VERIFIED",
+      "primary_module_name": "Paper/Journal presentation",
+      "snapshot_note": "READ_ONLY_DERIVED_TASK: links in original body converted to logical references; use module_spec_path within this repo. Work/acceptance match canonical current task; prior-to-current differences are in the migration registry."
+    },
+    {
+      "id": "ODX-WEB-010",
+      "short_id": "WEB-010",
+      "title": "Добавить Watch/Mission editor и управление уведомлениями",
+      "repository": "odelix-web",
+      "target_repository": "odelix-web",
+      "domain": "WEB",
+      "wave": 3,
+      "lane": "B",
+      "priority": "P1",
+      "kind": "CORE",
+      "status": "PROPOSED_RECONCILE_EXISTING_FIRST",
+      "suggested_project_status": "Todo",
+      "module": "AREA-WEB-WATCH",
+      "depends_on": [
+        "ODX-WEB-001",
+        "ODX-WKS-011",
+        "ODX-PRD-022",
+        "ODX-PRD-024"
+      ],
+      "sources": [
+        "REACT",
+        "R15"
+      ],
+      "modes": [
+        "NEW"
+      ],
+      "paths": [
+        "apps/web/src/features/watches/",
+        "apps/web/src/features/missions/",
+        "apps/web/tests/mission-policy.spec.ts"
+      ],
+      "work": [
+        "Показать goal,inputs,predicates,frequency/budget,expiry,quiet hours,review и permissions до activation.",
+        "Отключить activate для недоступной runtime capability; drafts остаются полезными.",
+        "Добавить pause/revoke/edit revision,delivery diagnostics и UI причины пробуждения."
+      ],
+      "acceptance": [
+        "Неактивный watcher не выглядит работающим.",
+        "Редактирование grants требует explicit consent.",
+        "User видит budget,next check и stop conditions.",
+        "Notification не выдаётся за приказ или execution approval."
+      ],
+      "test_path": "apps/web/tests/mission-policy.spec.ts",
+      "external_gate": "",
+      "old_package": "PAR-WEB-05",
+      "source_destination_decision": "",
+      "non_goals": "",
+      "github_issue_url": null,
+      "owner_base_commit": null,
+      "path_status": "PROPOSED_DESTINATION_RECONCILE_WITH_CURRENT_REPOSITORY",
+      "body_path": null,
+      "body": "<!-- odelix-planned-id: ODX-WEB-010 -->\n# [ODX-WEB-010] Добавить Watch/Mission editor и управление уведомлениями\n\n**Редакция:** r15.11 / Issue Pack 0.6.1 · **Статус плана:** PROPOSED / RECONCILE_EXISTING_FIRST.\n\n**Repository:** `odelix-web` · **Module:** `AREA-WEB-WATCH` · **Kind:** `DELIVERY_AREA`  \n**Domain:** `WEB` · **Priority:** `P1` · **Волна:** 3 · **Рабочая полоса:** B  \n**Затронутые модули:** Нет дополнительных  \n**Спецификация:** `odelix-web/docs/PRODUCT-SURFACE.md`  \n**Repo Lead:** `repo-lead:odelix-web` · **Общий Project:** Odelix Delivery, `delivery-coordinator` в odelix-stack.\n\nЛогическое имя repo не определяет владельца GitHub. Фактические URL, visibility, Project ID и полномочия читаются из текущей конфигурации; личный аккаунт допустим, transfer не prerequisite. Одна каноническая Issue добавляется в Project ссылкой, не копируется.\n\n## Ожидаемый результат\n\nДобавить Watch/Mission editor и управление уведомлениями. \n\n## Зависимости и допуск\n\n`ODX-WEB-001`, `ODX-WKS-011`, `ODX-PRD-022`, `ODX-PRD-024`\n\nПоле `depends_on` задаёт предшественников конкретного scope. Завершение кода не разрешает production. Контракты и изолированные fixtures допускают локальную разработку до runtime-интеграции. Условные/операционные действия выполняются только после своего grant и доказанных prerequisites.\n\n- **environment:** LOCAL_OR_ISOLATED_TEST_BY_DEFAULT\n- **production_authorization:** EXPLICIT_SEPARATE_GRANT\n- **evidence_status:** NOT_EVALUATED_IN_BUNDLE\n\n## Исходный код, сервисы и заимствования\n\n- **REACT — React + TypeScript + Next.js:** Выбранная web-native клиентская основа r13; Next.js только shell/routing/BFF без копии бизнес-правил Product. Версии фиксируются в bootstrap owner repo. Ref: `https://nextjs.org/docs`. Pin: `NOT_SELECTED`.\n- **R15 — Решение Workstation-first r15:** Историческое Workstation-first решение r15; текущая согласованная очередь r15.6/Issue Pack0.4.0. Не runtime evidence. Ref: `../odelix-stack/docs/DELIVERY-ROADMAP.md`. Pin: `r15-design`.\n\nДля ETAPE/OPENBB pin означает SELECTED_SOURCE_REVISION, а не installed package. Остальные исторические pins — provenance, не current HEAD. Фактические bytes, license/NOTICE и dependency lock проверяются в source-intake задаче.\n\n## Целевые пути\n\n```text\nodelix-web/\n  apps/web/src/features/watches/\n  apps/web/src/features/missions/\n  apps/web/tests/mission-policy.spec.ts\n```\n\nСначала найти существующий эквивалент; не создавать дубликат. HFTJRN02 и его история не переписываются.\n\n## Работы\n\n1. Показать goal,inputs,predicates,frequency/budget,expiry,quiet hours,review и permissions до activation.\n2. Отключить activate для недоступной runtime capability; drafts остаются полезными.\n3. Добавить pause/revoke/edit revision,delivery diagnostics и UI причины пробуждения.\n\n## Критерии приёмки\n\n- [ ] Неактивный watcher не выглядит работающим.\n- [ ] Редактирование grants требует explicit consent.\n- [ ] User видит budget,next check и stop conditions.\n- [ ] Notification не выдаётся за приказ или execution approval.\n\n## Проверка\n\nПредлагаемый test target: `apps/web/tests/mission-policy.spec.ts`. Команду определить по текущему коду. Эта карточка не содержит заявления, что тест выполнен.\n\nДля scope рыночных серий независимы: предметная семантика; совпадение live/replay/recovery при одинаковых inputs/cut/definition; ограниченная стоимость. Для прочих scopes применяются их собственные положительные, отрицательные и failure-проверки.\n\n## Не входит\n\nНезаявленные изменения вне разрешённого scope.\n\n## Завершение и полномочия\n\nСначала сопоставить существующие Issues (включая A0/M-87); не сбрасывать Done/history и не создавать дубли. Отдельный branch/worktree, явные write scopes, независимый reviewer. Общие contracts/lockfiles/migrations не дают фиктивной параллельности. Глобально три build/review scope; самостоятельная кодовая интеграция занимает тот же ресурс.\n\nВ исходной Issue сохранить base/result commits, exact tests, failed/not-run, artifacts, reviewer и следующий допустимый шаг. Доску обновляет назначенный Coordinator, сохраняя human override. Пакет не создаёт аккаунты, не настраивает GitHub и не разрешает purchases/deployment/финансовые действия.\n",
+      "source_refs": [
+        {
+          "id": "REACT",
+          "name": "React + TypeScript + Next.js",
+          "kind": "LIBRARY",
+          "ref": "https://nextjs.org/docs",
+          "detail": "Выбранная web-native клиентская основа r13; Next.js только shell/routing/BFF без копии бизнес-правил Product. Версии фиксируются в bootstrap owner repo.",
+          "pin": null,
+          "external": true
+        },
+        {
+          "id": "R15",
+          "name": "Решение Workstation-first r15",
+          "kind": "PROJECT_SPEC",
+          "ref": "../odelix-stack/docs/DELIVERY-ROADMAP.md",
+          "detail": "Историческое Workstation-first решение r15; текущая согласованная очередь r15.6/Issue Pack0.4.0. Не runtime evidence.",
+          "pin": "r15-design",
+          "external": false
+        }
+      ],
+      "test_execution_status": "NOT_RUN_PLANNING_ONLY",
+      "phase_r15": "Options ↔ underlying и Evidence; Hosted Missions и generic PAPER components",
+      "plan_version": "0.6.1",
+      "binding_note": "Фактический GitHub status/URL проверяется Coordinator; не создавать дубликат.",
+      "original_body_sha256": "7f64a05a7e006cc95fef282e6b342efd28a972e9311039815ca4c6700a628077",
+      "primary_module_id": "AREA-WEB-WATCH",
+      "affected_module_ids": [],
+      "module_kind": "DELIVERY_AREA",
+      "module_spec_path": "docs/PRODUCT-SURFACE.md",
+      "module_legacy": "Web Watch/Mission",
+      "component": "Добавить Watch/Mission editor и управление уведомлениями",
+      "module_assignment_status": "DOCUMENTED_MAPPING_REPO_LEAD_CONFIRMATION_REQUIRED",
+      "repo_lead_role": "repo-lead:odelix-web",
+      "project_coordinator_role": "delivery-coordinator",
+      "project_membership_status": "NOT_VERIFIED",
+      "module_mapping_revision": "r15.3",
+      "suggested_project_fields": {
+        "Module": "AREA-WEB-WATCH",
+        "Domain": "WEB",
+        "Priority": "P1",
+        "Status": "Todo"
+      },
+      "suggested_labels": [
+        "odelix-delivery",
+        "module:AREA-WEB-WATCH"
+      ],
+      "documentation_revision": "r15.11",
+      "target_binding_policy": "RESOLVE_FROM_ACTUAL_REPO_BINDING_PERSONAL_OR_ORG_NOT_A_PREREQUISITE",
+      "admission": {
+        "code_dependencies": [
+          "ODX-WEB-001",
+          "ODX-WKS-011",
+          "ODX-PRD-022",
+          "ODX-PRD-024"
+        ],
+        "environment": "LOCAL_OR_ISOLATED_TEST_BY_DEFAULT",
+        "production_authorization": "EXPLICIT_SEPARATE_GRANT",
+        "evidence_status": "NOT_EVALUATED_IN_BUNDLE"
+      },
+      "decision_status": "PROPOSED",
+      "implementation_status": "NOT_VERIFIED",
+      "primary_module_name": "Watch/Mission editor and notifications",
+      "snapshot_note": "READ_ONLY_DERIVED_TASK: links in original body converted to logical references; use module_spec_path within this repo. Work/acceptance match canonical current task; prior-to-current differences are in the migration registry."
+    }
+  ],
+  "modules": [
+    {
+      "id": "AREA-WEB-ACCOUNT",
+      "name": "Account and onboarding",
+      "repository": "odelix-web",
+      "kind": "DELIVERY_AREA",
+      "source_path": "docs/DEVELOPMENT.md#modules",
+      "assignment_basis": "R15_3_NEW_CLASSIFICATION_OF_EXISTING_SCOPE",
+      "implementation_status": "NOT_VERIFIED",
+      "note": "Classification for ownership/filtering only. Not a new business module, package or service.",
+      "activation": "ACTIVE",
+      "activation_basis": "Part of current planned work; not runtime activation.",
+      "activation_status": "PROPOSED_CLASSIFICATION",
+      "decision_status": "PROPOSED",
+      "linked_issue_ids": [
+        "ODX-WEB-001",
+        "ODX-WEB-004"
+      ],
+      "first_activation_gate": null
+    },
+    {
+      "id": "AREA-WEB-ASK",
+      "name": "Run, Ask and Evidence presentation",
+      "repository": "odelix-web",
+      "kind": "DELIVERY_AREA",
+      "source_path": "docs/DEVELOPMENT.md#modules",
+      "assignment_basis": "R15_3_NEW_CLASSIFICATION_OF_EXISTING_SCOPE",
+      "implementation_status": "NOT_VERIFIED",
+      "note": "Classification for ownership/filtering only. Not a new business module, package or service.",
+      "activation": "ACTIVE",
+      "activation_basis": "Part of current planned work; not runtime activation.",
+      "activation_status": "PROPOSED_CLASSIFICATION",
+      "decision_status": "PROPOSED",
+      "linked_issue_ids": [
+        "ODX-WEB-002"
+      ],
+      "first_activation_gate": null
+    },
+    {
+      "id": "AREA-WEB-DESK",
+      "name": "Desk/Terminal composition",
+      "repository": "odelix-web",
+      "kind": "DELIVERY_AREA",
+      "source_path": "docs/DEVELOPMENT.md#modules",
+      "assignment_basis": "R15_3_NEW_CLASSIFICATION_OF_EXISTING_SCOPE",
+      "implementation_status": "NOT_VERIFIED",
+      "note": "Classification for ownership/filtering only. Not a new business module, package or service.",
+      "activation": "ACTIVE",
+      "activation_basis": "Part of current planned work; not runtime activation.",
+      "activation_status": "PROPOSED_CLASSIFICATION",
+      "decision_status": "PROPOSED",
+      "linked_issue_ids": [
+        "ODX-WEB-003"
+      ],
+      "first_activation_gate": null
+    },
+    {
+      "id": "AREA-WEB-JOURNAL",
+      "name": "Paper/Journal presentation",
+      "repository": "odelix-web",
+      "kind": "DELIVERY_AREA",
+      "source_path": "docs/DEVELOPMENT.md#modules",
+      "assignment_basis": "R15_3_NEW_CLASSIFICATION_OF_EXISTING_SCOPE",
+      "implementation_status": "NOT_VERIFIED",
+      "note": "Classification for ownership/filtering only. Not a new business module, package or service.",
+      "activation": "ACTIVE",
+      "activation_basis": "Part of current planned work; not runtime activation.",
+      "activation_status": "PROPOSED_CLASSIFICATION",
+      "decision_status": "PROPOSED",
+      "linked_issue_ids": [
+        "ODX-WEB-009"
+      ],
+      "first_activation_gate": null
+    },
+    {
+      "id": "AREA-WEB-SHELL",
+      "name": "App shell",
+      "repository": "odelix-web",
+      "kind": "DELIVERY_AREA",
+      "source_path": "docs/DEVELOPMENT.md#modules",
+      "assignment_basis": "R15_3_NEW_CLASSIFICATION_OF_EXISTING_SCOPE",
+      "implementation_status": "NOT_VERIFIED",
+      "note": "Classification for ownership/filtering only. Not a new business module, package or service.",
+      "activation": "ACTIVE",
+      "activation_basis": "Part of current planned work; not runtime activation.",
+      "activation_status": "PROPOSED_CLASSIFICATION",
+      "decision_status": "PROPOSED",
+      "linked_issue_ids": [
+        "ODX-WEB-001"
+      ],
+      "first_activation_gate": null
+    },
+    {
+      "id": "AREA-WEB-WATCH",
+      "name": "Watch/Mission editor and notifications",
+      "repository": "odelix-web",
+      "kind": "DELIVERY_AREA",
+      "source_path": "docs/PRODUCT-SURFACE.md",
+      "assignment_basis": "R15_3_NEW_CLASSIFICATION_OF_EXISTING_SCOPE",
+      "implementation_status": "NOT_VERIFIED",
+      "note": "Classification for ownership/filtering only. Not a new business module, package or service.",
+      "activation": "ACTIVE",
+      "activation_basis": "Part of current planned work; not runtime activation.",
+      "activation_status": "PROPOSED_CLASSIFICATION",
+      "decision_status": "PROPOSED",
+      "linked_issue_ids": [
+        "ODX-WEB-010"
+      ],
+      "first_activation_gate": null
+    },
+    {
+      "id": "WEB-STRATEGY-LAB",
+      "name": "strategy-lab",
+      "repository": "odelix-web",
+      "kind": "MODULE",
+      "source_path": "modules/strategy-lab/MODULE.md",
+      "assignment_basis": "EXISTING_OWNER_SPEC",
+      "implementation_status": "NOT_VERIFIED",
+      "activation": "ACTIVE",
+      "activation_basis": "Part of current planned work; not runtime activation.",
+      "activation_status": "PROPOSED_CLASSIFICATION",
+      "decision_status": "PROPOSED",
+      "linked_issue_ids": [
+        "ODX-WEB-005",
+        "ODX-WEB-006",
+        "ODX-WEB-007",
+        "ODX-WEB-008"
+      ],
+      "first_activation_gate": null
+    }
+  ],
+  "gate_catalog": {
+    "schema_version": 1,
+    "release": "r15.11",
+    "policy": "Canonical vocabulary. Aliases are migration names, not separate gates. W1/P1/FA/CORE were overloaded and require contextual migration; priority P1 and Functional Architecture FA are not release gates.",
+    "deprecated_ambiguous": [
+      "P1",
+      "W1",
+      "W2",
+      "FA",
+      "CORE"
+    ],
+    "gates": [
+      {
+        "id": "FOUNDATION_GUARDS",
+        "owner": "odelix-stack",
+        "acceptance_issue_ids": [],
+        "scope": "ALL_APPLICABLE_IMPLEMENTATION",
+        "criteria": "Domain/time/number/security/source ownership invariants apply from the first affected code; no separate release permission.",
+        "aliases": [],
+        "decision_status": "PROPOSED",
+        "runtime_status": "NOT_EVALUATED",
+        "grant_required": true
+      },
+      {
+        "id": "A0",
+        "owner": "odelix-stack",
+        "acceptance_issue_ids": [
+          "ODX-STK-006"
+        ],
+        "scope": "existing history safety",
+        "criteria": "Five source Issue receipts + independent restore; pointer file carries no duplicated status.",
+        "aliases": [],
+        "decision_status": "PROPOSED",
+        "runtime_status": "NOT_EVALUATED",
+        "grant_required": true
+      },
+      {
+        "id": "P0_DATA_CORRECT",
+        "owner": "odelix-market",
+        "acceptance_issue_ids": [
+          "ODX-MKT-027"
+        ],
+        "scope": "current published data",
+        "criteria": "Independent producer→wire→consumer cases for deletions/empty/nochange/invalidation and closed history.",
+        "aliases": [],
+        "decision_status": "PROPOSED",
+        "runtime_status": "NOT_EVALUATED",
+        "grant_required": true
+      },
+      {
+        "id": "P0_ADMISSION_SAFE",
+        "owner": "odelix-market",
+        "acceptance_issue_ids": [
+          "ODX-MKT-028"
+        ],
+        "scope": "serving availability",
+        "criteria": "Cold refusal before raw payload I/O; bounded work/cancellation/authenticated probe; no public rebuild.",
+        "aliases": [],
+        "decision_status": "PROPOSED",
+        "runtime_status": "NOT_EVALUATED",
+        "grant_required": true
+      },
+      {
+        "id": "SCENE_CONTRACT_READY",
+        "owner": "odelix-product",
+        "acceptance_issue_ids": [
+          "ODX-PRD-027"
+        ],
+        "scope": "producer-owned schemas",
+        "criteria": "Pinned minimal Scene/Selection schema + fixtures before consumers; compatibility freeze for external pilot.",
+        "aliases": [],
+        "decision_status": "PROPOSED",
+        "runtime_status": "NOT_EVALUATED",
+        "grant_required": true
+      },
+      {
+        "id": "QUERY_REPLAY_CONTRACT_READY",
+        "owner": "odelix-market",
+        "acceptance_issue_ids": [
+          "ODX-MKT-005"
+        ],
+        "scope": "producer-owned schemas",
+        "criteria": "Versioned bounded query/replay contract and consumer fixtures; freeze before external pilot, independent of payment.",
+        "aliases": [],
+        "decision_status": "PROPOSED",
+        "runtime_status": "NOT_EVALUATED",
+        "grant_required": true
+      },
+      {
+        "id": "FLOW_DESK_LOCAL",
+        "owner": "odelix-stack",
+        "acceptance_issue_ids": [
+          "ODX-STK-014"
+        ],
+        "scope": "isolated founder-only demonstration",
+        "criteria": "Same WKS packages; permitted small recorded sample, footprint/selection/Inspector/replay; no public endpoint, no production load.",
+        "aliases": [],
+        "decision_status": "PROPOSED",
+        "runtime_status": "NOT_EVALUATED",
+        "grant_required": true
+      },
+      {
+        "id": "FLOW_DESK_PILOT",
+        "owner": "odelix-stack",
+        "acceptance_issue_ids": [
+          "ODX-STK-101"
+        ],
+        "scope": "limited external pilot",
+        "criteria": "P0+S2 shared read, real data/access/grants/recovery; no capacity claim. AI/billing/options not required.",
+        "aliases": [
+          "F",
+          "FLOW_DESK"
+        ],
+        "decision_status": "PROPOSED",
+        "runtime_status": "NOT_EVALUATED",
+        "grant_required": true
+      },
+      {
+        "id": "EPISODE_INPUT",
+        "owner": "odelix-market",
+        "acceptance_issue_ids": [
+          "ODX-MKT-019"
+        ],
+        "scope": "semantic input",
+        "criteria": "Versioned deterministic features, availableAt/source cut, evidence references and quality.",
+        "aliases": [
+          "E"
+        ],
+        "decision_status": "PROPOSED",
+        "runtime_status": "NOT_EVALUATED",
+        "grant_required": true
+      },
+      {
+        "id": "OPTIONS_CAPTURE_READY",
+        "owner": "odelix-market",
+        "acceptance_issue_ids": [
+          "ODX-MKT-004"
+        ],
+        "scope": "recording",
+        "criteria": "Bounded MKT-034 capture plus independent disconnect/gap/restart/replay/restore proofs.",
+        "aliases": [
+          "O0",
+          "D0"
+        ],
+        "decision_status": "PROPOSED",
+        "runtime_status": "NOT_EVALUATED",
+        "grant_required": true
+      },
+      {
+        "id": "OPTIONS_FLOW_READY",
+        "owner": "odelix-market",
+        "acceptance_issue_ids": [
+          "ODX-MKT-024"
+        ],
+        "scope": "option context",
+        "criteria": "Quotes/trades/underlying with PIT age/units; observations separate from inferred structures.",
+        "aliases": [
+          "O1"
+        ],
+        "decision_status": "PROPOSED",
+        "runtime_status": "NOT_EVALUATED",
+        "grant_required": true
+      },
+      {
+        "id": "SEMANTIC_TRANSPORT_READY",
+        "owner": "odelix-stack",
+        "acceptance_issue_ids": [
+          "ODX-STK-102"
+        ],
+        "scope": "typed evaluator delivery",
+        "criteria": "Typed results/versioned stored inputs/reconnect/budgets; does not imply model quality.",
+        "aliases": [
+          "SEMANTIC_SHADOW"
+        ],
+        "decision_status": "PROPOSED",
+        "runtime_status": "NOT_EVALUATED",
+        "grant_required": true
+      },
+      {
+        "id": "SEMANTIC_ACCEPTED",
+        "owner": "odelix-harness",
+        "acceptance_issue_ids": [
+          "ODX-HAR-016"
+        ],
+        "scope": "specific evaluator and dataset",
+        "criteria": "Independent labels, failed cases, baseline and prospective shadow; transport success not quality.",
+        "aliases": [],
+        "decision_status": "PROPOSED",
+        "runtime_status": "NOT_EVALUATED",
+        "grant_required": true
+      },
+      {
+        "id": "RESEARCH_READY",
+        "owner": "odelix-stack",
+        "acceptance_issue_ids": [
+          "ODX-STK-105"
+        ],
+        "scope": "universal experiments",
+        "criteria": "Different dependencies/entry/exit on common engine, no mandatory example strategy.",
+        "aliases": [],
+        "decision_status": "PROPOSED",
+        "runtime_status": "NOT_EVALUATED",
+        "grant_required": true
+      },
+      {
+        "id": "INVESTIGATION_READY",
+        "owner": "odelix-stack",
+        "acceptance_issue_ids": [
+          "ODX-STK-103"
+        ],
+        "scope": "managed Ask/Evidence/Thesis workflow",
+        "criteria": "Ограниченное исследование с typed tools, Critic, доказательствами и сохранением контекста. Не подтверждает forecast/исполнение/оплату.",
+        "aliases": [
+          "I1"
+        ],
+        "decision_status": "PROPOSED",
+        "runtime_status": "NOT_EVALUATED",
+        "grant_required": true
+      },
+      {
+        "id": "RESEARCH_VALIDATED",
+        "owner": "odelix-stack",
+        "acceptance_issue_ids": [
+          "ODX-STK-106"
+        ],
+        "scope": "reproducible research",
+        "criteria": "Immutable trials/splits/datasets/reports and valid comparisons. Can pass with forecast NOT_APPROVED.",
+        "aliases": [],
+        "decision_status": "PROPOSED",
+        "runtime_status": "NOT_EVALUATED",
+        "grant_required": true
+      },
+      {
+        "id": "FORECAST_ACCEPTED",
+        "owner": "odelix-product",
+        "acceptance_issue_ids": [
+          "ODX-PRD-030"
+        ],
+        "scope": "specific target and horizon",
+        "criteria": "Independent numerical baseline, calibration, temporal holdout and prospective outcomes; no unvalidated probability.",
+        "aliases": [],
+        "decision_status": "PROPOSED",
+        "runtime_status": "NOT_EVALUATED",
+        "grant_required": true
+      },
+      {
+        "id": "MOAT_DELTA",
+        "owner": "odelix-harness",
+        "acceptance_issue_ids": [
+          "ODX-HAR-008"
+        ],
+        "scope": "managed-intelligence commercial claim",
+        "criteria": "Predeclared pairwise or composite evaluation with no guard regression; not automatically scientific significance.",
+        "aliases": [],
+        "decision_status": "PROPOSED",
+        "runtime_status": "NOT_EVALUATED",
+        "grant_required": true
+      },
+      {
+        "id": "CONNECT_COMMERCIAL",
+        "owner": "odelix-stack",
+        "acceptance_issue_ids": [
+          "ODX-STK-104"
+        ],
+        "scope": "commercial activation",
+        "criteria": "Entitlements/usage/recovery/security/data rights/perimeter review; MOAT_DELTA for intelligence claim, not raw-data claim.",
+        "aliases": [
+          "AI-5"
+        ],
+        "decision_status": "PROPOSED",
+        "runtime_status": "NOT_EVALUATED",
+        "grant_required": true
+      },
+      {
+        "id": "PAPER_READY",
+        "owner": "odelix-stack",
+        "acceptance_issue_ids": [
+          "ODX-STK-107"
+        ],
+        "scope": "RESEARCH_STRATEGYVERSION_TO_PAPER",
+        "criteria": "Typed simulated lifecycle/reconciliation and separate policy; no live authority. Requires original Research StrategyVersion semantics, independent of earlier HOSTED_PAPER_READY.",
+        "aliases": [
+          "PAPER"
+        ],
+        "decision_status": "PROPOSED",
+        "runtime_status": "NOT_EVALUATED",
+        "grant_required": true
+      },
+      {
+        "id": "PAPER_RESILIENT",
+        "owner": "odelix-stack",
+        "acceptance_issue_ids": [
+          "ODX-STK-108"
+        ],
+        "scope": "RESEARCH_INTEGRATED_PAPER_FAILURES",
+        "criteria": "Fault injection/restart/duplicates/cancel races and durable delivery.",
+        "aliases": [],
+        "decision_status": "PROPOSED",
+        "runtime_status": "NOT_EVALUATED",
+        "grant_required": true
+      },
+      {
+        "id": "WATCH_READY",
+        "owner": "odelix-product",
+        "acceptance_issue_ids": [
+          "ODX-PRD-024"
+        ],
+        "scope": "durable notifications",
+        "criteria": "Bounded predicates/outbox/delivery without a trading permission.",
+        "aliases": [],
+        "decision_status": "PROPOSED",
+        "runtime_status": "NOT_EVALUATED",
+        "grant_required": true
+      },
+      {
+        "id": "PRO_WORKSTATION",
+        "owner": "odelix-stack",
+        "acceptance_issue_ids": [
+          "ODX-STK-109"
+        ],
+        "scope": "extended workspace",
+        "criteria": "Long session/renderer/replay/missions tested under named client profile.",
+        "aliases": [],
+        "decision_status": "PROPOSED",
+        "runtime_status": "NOT_EVALUATED",
+        "grant_required": true
+      },
+      {
+        "id": "SCALE_READY",
+        "owner": "odelix-stack",
+        "acceptance_issue_ids": [
+          "ODX-STK-013"
+        ],
+        "scope": "named workload and deployment",
+        "criteria": "Multiple instruments, reconnect, slow users, compute independence and measured capacity; no generic 100k claim.",
+        "aliases": [],
+        "decision_status": "PROPOSED",
+        "runtime_status": "NOT_EVALUATED",
+        "grant_required": true
+      },
+      {
+        "id": "LIVE_AUTHORIZED",
+        "owner": "odelix-execution",
+        "acceptance_issue_ids": [],
+        "scope": "STRATEGIC_BRANCH_NOT_ADMITTED",
+        "criteria": "Separate scope, feasibility, authority, risk/security/legal and independent approval; not activated by analytic success.",
+        "aliases": [
+          "LIVE",
+          "EXT-LIVE"
+        ],
+        "decision_status": "PROPOSED",
+        "runtime_status": "NOT_EVALUATED",
+        "grant_required": true
+      },
+      {
+        "id": "VENUE_DISCOVERY",
+        "owner": "odelix-execution",
+        "acceptance_issue_ids": [],
+        "scope": "STRATEGIC_BRANCH_NOT_ADMITTED",
+        "criteria": "Separate scope, feasibility, authority, risk/security/legal and independent approval; not activated by analytic success.",
+        "aliases": [
+          "V0"
+        ],
+        "decision_status": "PROPOSED",
+        "runtime_status": "NOT_EVALUATED",
+        "grant_required": true
+      },
+      {
+        "id": "VENUE_TESTNET",
+        "owner": "odelix-execution",
+        "acceptance_issue_ids": [],
+        "scope": "STRATEGIC_BRANCH_NOT_ADMITTED",
+        "criteria": "Separate scope, feasibility, authority, risk/security/legal and independent approval; not activated by analytic success.",
+        "aliases": [
+          "V1"
+        ],
+        "decision_status": "PROPOSED",
+        "runtime_status": "NOT_EVALUATED",
+        "grant_required": true
+      },
+      {
+        "id": "VENUE_LAUNCH",
+        "owner": "odelix-execution",
+        "acceptance_issue_ids": [],
+        "scope": "STRATEGIC_BRANCH_NOT_ADMITTED",
+        "criteria": "Separate scope, feasibility, authority, risk/security/legal and independent approval; not activated by analytic success.",
+        "aliases": [
+          "V2"
+        ],
+        "decision_status": "PROPOSED",
+        "runtime_status": "NOT_EVALUATED",
+        "grant_required": true
+      },
+      {
+        "id": "EXTERNAL_DATA_CONTRACT_READY",
+        "owner": "odelix-market",
+        "acceptance_issue_ids": [
+          "ODX-MKT-090"
+        ],
+        "scope": "CONTRACT_ONLY",
+        "criteria": "Опубликован design external extension существующих Query/Capability/Manifest, самостоятельная source identity и отрицательные fixtures. Не runtime readiness.",
+        "aliases": [],
+        "decision_status": "PROPOSED",
+        "runtime_status": "NOT_EVALUATED",
+        "grant_required": true
+      },
+      {
+        "id": "EXTERNAL_DATA_PREVIEW",
+        "owner": "odelix-stack",
+        "acceptance_issue_ids": [
+          "ODX-STK-016"
+        ],
+        "scope": "LOCAL_PRIVATE_PREVIEW",
+        "criteria": "В изолированном окружении реальные разрешённые Deribit candles + ECB reference snapshot через Odelix adapter; Inspector, stored response replay без vendor call, limits/rights/failure tests. Не native flow/PIT/scale/public admission.",
+        "aliases": [],
+        "decision_status": "PROPOSED",
+        "runtime_status": "NOT_EVALUATED",
+        "grant_required": true
+      },
+      {
+        "id": "EXTERNAL_OPTIONS_PREVIEW",
+        "owner": "odelix-workstation",
+        "acceptance_issue_ids": [
+          "ODX-MKT-037",
+          "ODX-WKS-021"
+        ],
+        "scope": "LOCAL_PRIVATE_OPTION_REFERENCE",
+        "criteria": "Реальная bounded current chain с conversion/precision/per-row times/partial policy и offline replay receipt. Отдельно от OPTIONS_CAPTURE_READY/OPTIONS_FLOW_READY и любого исполнения.",
+        "aliases": [],
+        "decision_status": "PROPOSED",
+        "runtime_status": "NOT_EVALUATED",
+        "grant_required": true
+      },
+      {
+        "id": "FLIGHT_RECORDER_READY",
+        "owner": "odelix-stack",
+        "acceptance_issue_ids": [
+          "ODX-STK-020"
+        ],
+        "scope": "READONLY_IMPORTED_EVENTS_WITH_COVERAGE",
+        "criteria": "Полные work/acceptance указанной карточки; без упрощения родственных или внешних gates.",
+        "aliases": [],
+        "decision_status": "PROPOSED",
+        "runtime_status": "NOT_EVALUATED",
+        "grant_required": true
+      },
+      {
+        "id": "HOSTED_MISSION_READY",
+        "owner": "odelix-stack",
+        "acceptance_issue_ids": [
+          "ODX-STK-022"
+        ],
+        "scope": "BOUNDED_HOSTED_OBSERVATION_WITHOUT_RESEARCH",
+        "criteria": "Полные work/acceptance указанной карточки; без упрощения родственных или внешних gates.",
+        "aliases": [],
+        "decision_status": "PROPOSED",
+        "runtime_status": "NOT_EVALUATED",
+        "grant_required": true
+      },
+      {
+        "id": "HOSTED_PAPER_READY",
+        "owner": "odelix-stack",
+        "acceptance_issue_ids": [
+          "ODX-STK-021"
+        ],
+        "scope": "GENERIC_HOSTED_SIMULATION_WITH_MANDATORY_FAILURE_TESTS",
+        "criteria": "Полные work/acceptance указанной карточки; без упрощения родственных или внешних gates.",
+        "aliases": [],
+        "decision_status": "PROPOSED",
+        "runtime_status": "NOT_EVALUATED",
+        "grant_required": true
+      },
+      {
+        "id": "AGENT_VALIDATION_PROFILE_READY",
+        "owner": "odelix-stack",
+        "acceptance_issue_ids": [
+          "ODX-STK-019"
+        ],
+        "scope": "EVIDENCE_SCHEMA_NOT_LIVE_AUTHORIZATION",
+        "criteria": "Полные work/acceptance указанной карточки; без упрощения родственных или внешних gates.",
+        "aliases": [],
+        "decision_status": "PROPOSED",
+        "runtime_status": "NOT_EVALUATED",
+        "grant_required": true
+      },
+      {
+        "id": "NODE_PAPER_DEMAND",
+        "owner": "odelix-stack",
+        "acceptance_issue_ids": [
+          "ODX-STK-023"
+        ],
+        "scope": "CONDITIONAL_DEMAND_AND_EXPLICIT_SCOPE_ADMISSION",
+        "criteria": "Полные work/acceptance указанной карточки; без упрощения родственных или внешних gates.",
+        "aliases": [],
+        "decision_status": "PROPOSED",
+        "runtime_status": "NOT_EVALUATED",
+        "grant_required": true
+      },
+      {
+        "id": "PAPER_NODE_READY",
+        "owner": "odelix-stack",
+        "acceptance_issue_ids": [
+          "ODX-STK-018"
+        ],
+        "scope": "PORTABLE_PAPER_ONLY_NAMED_PROFILE",
+        "criteria": "Полные work/acceptance указанной карточки; без упрощения родственных или внешних gates.",
+        "aliases": [],
+        "decision_status": "PROPOSED",
+        "runtime_status": "NOT_EVALUATED",
+        "grant_required": true
+      },
+      {
+        "id": "DATA_ACQUISITION_CONTRACT_READY",
+        "owner": "odelix-market",
+        "acceptance_issue_ids": [
+          "ODX-MKT-039"
+        ],
+        "scope": "design",
+        "criteria": "Coverage/discovery/source use contracts and synthetic tests; no fetch permission",
+        "aliases": [],
+        "decision_status": "PROPOSED",
+        "runtime_status": "NOT_EVALUATED",
+        "grant_required": true
+      },
+      {
+        "id": "DATA_RIGHTS_REVIEWED",
+        "owner": "odelix-stack",
+        "acceptance_issue_ids": [
+          "ODX-STK-024"
+        ],
+        "scope": "governance",
+        "criteria": "Recorded personal-use eligibility with source/entity/date, scope, evidence and signer when supplied; reviewed != actual grant; product rights independent.",
+        "aliases": [],
+        "decision_status": "PROPOSED",
+        "runtime_status": "NOT_EVALUATED",
+        "grant_required": true
+      },
+      {
+        "id": "DERIBIT_COLLECTION_READY",
+        "owner": "odelix-market",
+        "acceptance_issue_ids": [
+          "ODX-MKT-047",
+          "ODX-MKT-048"
+        ],
+        "scope": "declared source profile",
+        "criteria": "Scoped personal subscriptions/history proven after signed applicable grant, asset restore and 24h capacity profile; code-only MKT-040/041 do not close capture readiness.",
+        "aliases": [],
+        "decision_status": "PROPOSED",
+        "runtime_status": "NOT_EVALUATED",
+        "grant_required": true
+      },
+      {
+        "id": "FRED_COLLECTION_READY",
+        "owner": "odelix-market",
+        "acceptance_issue_ids": [
+          "ODX-MKT-043",
+          "ODX-MKT-044"
+        ],
+        "scope": "BOUNDED_PERSONAL_FILE_PROFILE_NOT_GLOBAL_CORPUS",
+        "criteria": "Named permissible personal series/vintage use with documented route, notice and applicable retention permission. General/API storage restrictions not overridden by personal purpose; no automatic wholesale/API-store or ML. Blocked corpus cannot pass.",
+        "aliases": [],
+        "decision_status": "PROPOSED",
+        "runtime_status": "NOT_EVALUATED",
+        "grant_required": true
+      },
+      {
+        "id": "FULL_DATA_PROGRAM_READY",
+        "owner": "odelix-stack",
+        "acceptance_issue_ids": [
+          "ODX-STK-026"
+        ],
+        "scope": "SOURCE_SPECIFIC_PERSONAL_COLLECTION_SYSTEM",
+        "criteria": "Named Deribit and bounded FRED profiles accepted independently; denied/pending STORE/source profile remains visibly blocked and prevents full program readiness. No all-FRED-universe claim.",
+        "aliases": [],
+        "decision_status": "PROPOSED",
+        "runtime_status": "NOT_EVALUATED",
+        "grant_required": true
+      }
+    ],
+    "boundaries": [
+      {
+        "id": "CAPITAL_STRATEGIC_BRANCH",
+        "owner": "odelix-stack",
+        "acceptance_issue_ids": [],
+        "scope": "STRATEGIC_BOUNDARY",
+        "criteria": "Отдельное принятие действующих требований соответствующего scope; не readiness по имени.",
+        "aliases": [
+          "CAPITAL"
+        ],
+        "decision_status": "PROPOSED",
+        "runtime_status": "NOT_APPLICABLE",
+        "grant_required": true,
+        "kind": "STRATEGIC_BOUNDARY_NOT_GATE"
+      }
+    ],
+    "authorization_registry": "GRANTS.json"
+  },
+  "full_data_targets": {
+    "schema_version": 1,
+    "release": "r15.11",
+    "decision_status": "SELECTED_FOR_IMPLEMENTATION",
+    "owner": "odelix-market",
+    "scope_basis": "r15.10 user personal-use direction: Deribit public universe; FRED bounded personal series/downloads, not wholesale API corpus",
+    "first_slice_is_not_scope_limit": {
+      "DERIBIT": true,
+      "FRED_ALFRED": false
+    },
+    "runtime_status": "NOT_STARTED_BY_BUNDLE",
+    "authority_registry": "SOURCE-USE-POLICY.json",
+    "coverage_model": {
+      "axes": [
+        "source",
+        "data_class",
+        "instrument_or_series",
+        "event_period",
+        "source_revision_or_vintage",
+        "discovery_snapshot",
+        "acquired_at",
+        "quality",
+        "rights_state"
+      ],
+      "statuses": [
+        "TARGET",
+        "DISCOVERED",
+        "SUPPORTED",
+        "AUTHORIZED",
+        "CAPTURED",
+        "BACKFILLED",
+        "VERIFIED",
+        "RIGHTS_PENDING",
+        "GAP",
+        "NOT_AVAILABLE",
+        "RETIRED",
+        "DENIED_BY_TERMS",
+        "PROFILE_EXCLUDED"
+      ],
+      "denominator_policy": "Per-source versioned admitted target. Deribit full target staged; FRED denominator is explicit personal series/vintage list, not global catalogue. Denied scopes listed separately, never CAPTURED."
+    },
+    "sources": [
+      {
+        "id": "DERIBIT",
+        "target_status": "SELECTED_FOR_IMPLEMENTATION",
+        "collection_goal": "FULL_ACCESSIBLE_PUBLIC_COVERAGE_PERSONAL_USE",
+        "acquisition_status": "NOT_STARTED",
+        "rights_status": "PROFILE_SCOPED_NO_ACTUAL_GRANT",
+        "collector": "DIRECT_DERIBIT",
+        "openbb_role": "EARLY_PREVIEW_NOT_COLLECTOR_OF_RECORD",
+        "classes": [
+          {
+            "id": "instruments",
+            "universe": "ALL_PUBLIC_DISCOVERED",
+            "scope": "terms snapshots/lifecycle incl expiry and instrument revisions",
+            "observed_count": null,
+            "earliest_available": null,
+            "collected_from": null,
+            "coverage_status": "NOT_MEASURED"
+          },
+          {
+            "id": "trades",
+            "universe": "ALL_PUBLIC_DISCOVERED",
+            "scope": "raw trades + original IDs, side and unknown fields",
+            "observed_count": null,
+            "earliest_available": null,
+            "collected_from": null,
+            "coverage_status": "NOT_MEASURED"
+          },
+          {
+            "id": "order_book",
+            "universe": "ALL_PUBLIC_DISCOVERED",
+            "scope": "available snapshot/delta modes; no invented historic L2",
+            "observed_count": null,
+            "earliest_available": null,
+            "collected_from": null,
+            "coverage_status": "NOT_MEASURED"
+          },
+          {
+            "id": "ticker",
+            "universe": "ALL_PUBLIC_DISCOVERED",
+            "scope": "quotes/mark/index/OI/IV/Greeks/funding fields with per-instrument units",
+            "observed_count": null,
+            "earliest_available": null,
+            "collected_from": null,
+            "coverage_status": "NOT_MEASURED"
+          },
+          {
+            "id": "index_volatility",
+            "universe": "ALL_PUBLIC_PUBLISHED",
+            "scope": "available index/volatility/curve data, source versus derived separated",
+            "observed_count": null,
+            "earliest_available": null,
+            "collected_from": null,
+            "coverage_status": "NOT_MEASURED"
+          },
+          {
+            "id": "settlement_delivery",
+            "universe": "ALL_PUBLIC_PUBLISHED",
+            "scope": "published settlement/delivery/history where supported",
+            "observed_count": null,
+            "earliest_available": null,
+            "collected_from": null,
+            "coverage_status": "NOT_MEASURED"
+          },
+          {
+            "id": "ohlc_funding_mark_history",
+            "universe": "ALL_AVAILABLE_HISTORY",
+            "scope": "documented class-specific historical windows/coverage",
+            "observed_count": null,
+            "earliest_available": null,
+            "collected_from": null,
+            "coverage_status": "NOT_MEASURED"
+          },
+          {
+            "id": "additional_public_classes",
+            "universe": "CATALOG_DISCOVERY",
+            "scope": "combos/RFQ/block/public status only when documented and authorized; private endpoints excluded",
+            "observed_count": null,
+            "earliest_available": null,
+            "collected_from": null,
+            "coverage_status": "NOT_MEASURED"
+          }
+        ],
+        "operations": {
+          "default": {
+            "DISCOVER_METADATA": "PENDING",
+            "ACQUIRE": "PENDING",
+            "STORE": "PENDING",
+            "INTERNAL_COMPUTE": "PENDING",
+            "AI_INFERENCE": "PENDING",
+            "MODEL_TRAINING": "PENDING",
+            "AS_SHOWN_REPLAY": "PENDING",
+            "DISPLAY": "PENDING",
+            "REDISTRIBUTE": "PENDING",
+            "EXPORT": "PENDING",
+            "PERSONAL_DOWNLOAD": "PENDING",
+            "AI_DEVELOPMENT": "PENDING",
+            "USER_MEMORY": "PENDING",
+            "EVAL": "PENDING"
+          },
+          "profile_registry": "SOURCE-USE-POLICY.json"
+        },
+        "issue_ids": [
+          "ODX-MKT-039",
+          "ODX-STK-024",
+          "ODX-MKT-045",
+          "ODX-MKT-040",
+          "ODX-MKT-041",
+          "ODX-MKT-046",
+          "ODX-STK-026",
+          "ODX-MKT-047",
+          "ODX-MKT-048",
+          "ODX-STK-006",
+          "ODX-STK-025"
+        ],
+        "rights_namespace": "personal/<subject>",
+        "channel_tiering": {
+          "perpetuals_futures": "raw book only when entitled and measured; otherwise declared supported interval, no false raw coverage",
+          "options": "supported aggregated book interval selected in capacity profile; trades/ticker across admitted universe",
+          "scope_note": "Full universe is not full raw depth across every class. Each channel interval and loss of intra-interval detail is part of coverage."
+        }
+      },
+      {
+        "id": "FRED_ALFRED",
+        "target_status": "SELECTED_FOR_IMPLEMENTATION",
+        "collection_goal": "BOUNDED_PERSONAL_SERIES_AND_NAMED_VINTAGES",
+        "acquisition_status": "NOT_STARTED",
+        "rights_status": "PROFILE_SCOPED_NO_ACTUAL_GRANT",
+        "collector": "USER_SUPPLIED_SITE_ALFRED_FILES_NO_AUTOMATED_DOWNLOAD",
+        "openbb_role": "NOT_A_FRED_PERMISSION_OR_STORAGE_BYPASS",
+        "classes": [
+          {
+            "id": "catalog",
+            "universe": "EXPLICIT_PERSONAL_ALLOWLIST",
+            "scope": "Metadata only for named series and their necessary source/release references; no recursive catalog mirror",
+            "observed_count": null,
+            "earliest_available": null,
+            "collected_from": null,
+            "coverage_status": "NOT_MEASURED"
+          },
+          {
+            "id": "metadata",
+            "universe": "EXPLICIT_PERSONAL_ALLOWLIST",
+            "scope": "Preserve source notices/units/frequency for each named download; not for AI development",
+            "observed_count": null,
+            "earliest_available": null,
+            "collected_from": null,
+            "coverage_status": "NOT_MEASURED"
+          },
+          {
+            "id": "observations",
+            "universe": "EXPLICIT_PERSONAL_ALLOWLIST",
+            "scope": "User-supplied bounded download files; no FRED bulk API-store; archive import blocked absent separate written evidence",
+            "observed_count": null,
+            "earliest_available": null,
+            "collected_from": null,
+            "coverage_status": "NOT_MEASURED"
+          },
+          {
+            "id": "vintages",
+            "universe": "EXPLICIT_PERSONAL_ALLOWLIST",
+            "scope": "Only named available downloaded vintages; do not invent unseen revisions or query all vintage dates",
+            "observed_count": null,
+            "earliest_available": null,
+            "collected_from": null,
+            "coverage_status": "NOT_MEASURED"
+          },
+          {
+            "id": "release_updates",
+            "universe": "EXPLICIT_PERSONAL_ALLOWLIST",
+            "scope": "Owner-approved new download receipt; no automatic scraper or API archive loop",
+            "observed_count": null,
+            "earliest_available": null,
+            "collected_from": null,
+            "coverage_status": "NOT_MEASURED"
+          },
+          {
+            "id": "retired_and_missing",
+            "universe": "EXPLICIT_PERSONAL_ALLOWLIST",
+            "scope": "Explicit missing markers and retired items within selected list",
+            "observed_count": null,
+            "earliest_available": null,
+            "collected_from": null,
+            "coverage_status": "NOT_MEASURED"
+          }
+        ],
+        "operations": {
+          "default": {
+            "DISCOVER_METADATA": "PENDING",
+            "ACQUIRE": "PENDING",
+            "STORE": "DENIED_BY_TERMS",
+            "INTERNAL_COMPUTE": "PENDING",
+            "AI_INFERENCE": "PENDING",
+            "MODEL_TRAINING": "DENIED_BY_TERMS",
+            "AS_SHOWN_REPLAY": "PENDING",
+            "DISPLAY": "PENDING",
+            "REDISTRIBUTE": "PENDING",
+            "EXPORT": "PENDING",
+            "PERSONAL_DOWNLOAD": "PENDING",
+            "AI_DEVELOPMENT": "DENIED_BY_TERMS",
+            "USER_MEMORY": "PENDING",
+            "EVAL": "PENDING"
+          },
+          "profile_registry": "SOURCE-USE-POLICY.json"
+        },
+        "issue_ids": [
+          "ODX-MKT-039",
+          "ODX-STK-024",
+          "ODX-MKT-045",
+          "ODX-MKT-042",
+          "ODX-MKT-043",
+          "ODX-MKT-044",
+          "ODX-MKT-046",
+          "ODX-STK-026"
+        ],
+        "rights_namespace": "personal/<subject>",
+        "series_allowlist": [],
+        "vintage_allowlist": [],
+        "selection_status": "OWNER_MUST_RECORD_USED_SERIES",
+        "former_universe_status": "DENIED_BY_TERMS_WITHOUT_WRITTEN_PERMISSION",
+        "corpus_store_status": "DENIED_BY_TERMS_WITHOUT_WRITTEN_PERMISSION"
+      }
+    ],
+    "runtime_status_note": "These fields describe the new full collection program; existing recorder/archives have not been audited and are not declared stopped or empty."
+  },
+  "source_use_policy": {
+    "schema_version": 2,
+    "release": "r15.11",
+    "owner": "odelix-market",
+    "governance_issue": "ODX-STK-024",
+    "decision_source": "User consolidated r15.9→r15.10 request, checked against primary terms on 2026-09-28",
+    "target_sources": [
+      "DERIBIT",
+      "FRED_ALFRED"
+    ],
+    "target_scope_status": "SELECTED_FOR_IMPLEMENTATION",
+    "ops": [
+      "DISCOVER_METADATA",
+      "ACQUIRE",
+      "STORE",
+      "INTERNAL_COMPUTE",
+      "AI_INFERENCE",
+      "MODEL_TRAINING",
+      "AS_SHOWN_REPLAY",
+      "DISPLAY",
+      "REDISTRIBUTE",
+      "EXPORT",
+      "PERSONAL_DOWNLOAD",
+      "AI_DEVELOPMENT",
+      "USER_MEMORY",
+      "EVAL"
+    ],
+    "rule": "ALLOWED in a profile means eligibility, not an issued grant. Match subject, source, exact dataset list/universe version, route, operation, audience, purpose, namespace and validity. PERSONAL_USE never grants product use. DENIED_BY_TERMS is not overridable by a self-signed PERSONAL_USE assertion.",
+    "defaults": {
+      "DERIBIT": {
+        "DISCOVER_METADATA": "PENDING",
+        "ACQUIRE": "PENDING",
+        "STORE": "PENDING",
+        "INTERNAL_COMPUTE": "PENDING",
+        "AI_INFERENCE": "PENDING",
+        "MODEL_TRAINING": "PENDING",
+        "AS_SHOWN_REPLAY": "PENDING",
+        "DISPLAY": "PENDING",
+        "REDISTRIBUTE": "PENDING",
+        "EXPORT": "PENDING",
+        "PERSONAL_DOWNLOAD": "PENDING",
+        "AI_DEVELOPMENT": "PENDING",
+        "USER_MEMORY": "PENDING",
+        "EVAL": "PENDING"
+      },
+      "FRED_ALFRED": {
+        "DISCOVER_METADATA": "PENDING",
+        "ACQUIRE": "PENDING",
+        "STORE": "DENIED_BY_TERMS",
+        "INTERNAL_COMPUTE": "PENDING",
+        "AI_INFERENCE": "PENDING",
+        "MODEL_TRAINING": "DENIED_BY_TERMS",
+        "AS_SHOWN_REPLAY": "PENDING",
+        "DISPLAY": "PENDING",
+        "REDISTRIBUTE": "PENDING",
+        "EXPORT": "PENDING",
+        "PERSONAL_DOWNLOAD": "PENDING",
+        "AI_DEVELOPMENT": "DENIED_BY_TERMS",
+        "USER_MEMORY": "PENDING",
+        "EVAL": "PENDING"
+      }
+    },
+    "actual_grants": [],
+    "grant_fields": [
+      "source_id",
+      "source_entity",
+      "terms_version",
+      "dataset_scope",
+      "operation",
+      "decision",
+      "valid_from",
+      "valid_until",
+      "evidence_ref",
+      "approved_by",
+      "policy_version",
+      "grant_id",
+      "grant_type",
+      "profile_id",
+      "subject_id",
+      "purpose",
+      "audience",
+      "rights_namespace",
+      "route",
+      "signature_ref",
+      "terms_evidence_ref",
+      "attestation_scope_sha256",
+      "revoked"
+    ],
+    "special_rules": [
+      "raw and derived/narrative data both classified",
+      "hash/opaque ref does not confer rights or completeness",
+      "third party series rights are additional",
+      "expiry/revoke requires retention/action review, no invented immutable forever exception",
+      "no alias/OpenBB/Node/direct/credential route bypass",
+      "no automatically permitted private operation",
+      "User-supplied measurements are dated unverified operational inputs until refreshed",
+      "Derived values and narrative inherit source-use classification; opaque refs must not auto-resolve to forbidden content",
+      "ALFRED is part of FRED terms, not an alternate permission route",
+      "FRED personal-download and Odelix corpus STORE are distinct operations"
+    ],
+    "policy_status": "PROPOSED_FOR_OPERATOR_ATTESTATION",
+    "states": [
+      "ALLOWED",
+      "PENDING",
+      "DENIED",
+      "DENIED_BY_TERMS"
+    ],
+    "grant_types": [
+      "PERSONAL_USE",
+      "PRODUCT_USE",
+      "PRIOR_WRITTEN_PERMISSION"
+    ],
+    "evidence_catalog": [
+      {
+        "id": "DERIBIT_FZE_TERMS_2026_08_13",
+        "url": "https://support.deribit.com/hc/en-us/articles/25944532191645-Deribit-Exchange-Membership-Terms-Deribit-FZE",
+        "clauses": [
+          "2.10",
+          "2.11",
+          "27.1(i)"
+        ],
+        "checked_on": "2026-09-28",
+        "kind": "PUBLISHED_TERMS_NOT_INDIVIDUAL_PERMISSION"
+      },
+      {
+        "id": "DERIBIT_COLLECTION_GUIDE",
+        "url": "https://docs.deribit.com/articles/market-data-collection-best-practices",
+        "checked_on": "2026-09-28",
+        "kind": "TECHNICAL_GUIDE_NOT_OVERRIDE_OF_TERMS"
+      },
+      {
+        "id": "FRED_TERMS_2026_09_28",
+        "url": "https://fred.stlouisfed.org/legal/terms/",
+        "clauses": [
+          "General License",
+          "FRED_GENERAL_EXCESSIVE_ACCESS",
+          "FRED_GENERAL_STORAGE",
+          "FRED_SUMMARY_AI_DEVELOPMENT",
+          "FRED_API_AI_DEVELOPMENT",
+          "FRED_API_STORAGE",
+          "FRED_API_WHOLESALE"
+        ],
+        "checked_on": "2026-09-28",
+        "kind": "PUBLISHED_TERMS_REQUIRING_APPLICABILITY_REVIEW",
+        "clause_refs": [
+          {
+            "rule_id": "FRED_GENERAL_EXCESSIVE_ACCESS",
+            "section": "Prohibitions for FRED® Services and FRED® Content",
+            "observed_label": "(g)",
+            "meaning_ru": "Ограничение чрезмерного или нарушающего работу доступа/сбора; не приписывать этой строке запрет любого запроса."
+          },
+          {
+            "rule_id": "FRED_GENERAL_STORAGE",
+            "section": "Prohibitions for FRED® Services and FRED® Content",
+            "observed_label": "(p)",
+            "locator_prefix": "Store, cache, or archive",
+            "meaning_ru": "Хранение/кэширование/архивирование и включение в базу ограничены; действует вводное условие о предварительном письменном согласии."
+          },
+          {
+            "rule_id": "FRED_SUMMARY_AI_DEVELOPMENT",
+            "section": "Summarized FRED® Services Terms of Use — II. Prohibited Use",
+            "observed_label": "unnumbered AI bullet",
+            "locator_prefix": "development or training",
+            "meaning_ru": "AI/software-development ограничение найдено в summary. Не присваивать ему номер (p) в прочитанной общей таблице."
+          },
+          {
+            "rule_id": "FRED_API_AI_DEVELOPMENT",
+            "section": "Additional Terms of Use for the FRED® API — Prohibitions for FRED® API",
+            "observed_label": "(k)",
+            "meaning_ru": "API-ограничение разработки/обучения software/ML/AI."
+          },
+          {
+            "rule_id": "FRED_API_STORAGE",
+            "section": "Additional Terms of Use for the FRED® API — Prohibitions for FRED® API",
+            "observed_label": "(l)",
+            "meaning_ru": "API-ограничение хранения/кэширования/архивирования."
+          },
+          {
+            "rule_id": "FRED_API_WHOLESALE",
+            "section": "Additional Terms of Use for the FRED® API — Prohibitions for FRED® API",
+            "observed_label": "(m)",
+            "meaning_ru": "Оптовая загрузка/доступ через API в нарушение общих условий."
+          }
+        ],
+        "recheck_ref": {
+          "publisher": "odelix-stack",
+          "source_path": "reference/FRED-TERMS-RECHECK-2026-09-28.json"
+        },
+        "numbering_discrepancy": "Reviewer p/q replacement not confirmed in retrieved copy; semantic references and dated observed labels are authoritative for this review, not perpetual clause numbers."
+      }
+    ],
+    "profiles": [
+      {
+        "id": "DERIBIT_PERSONAL_SUBSCRIPTIONS",
+        "source_id": "DERIBIT",
+        "grant_type": "PERSONAL_USE",
+        "source_entity": "Deribit FZE; operator must verify applicability",
+        "terms_version": "13 August 2026",
+        "purpose": "PERSONAL_NON_COMMERCIAL",
+        "audience": "SELF",
+        "rights_namespace": "personal/<subject>",
+        "route": "SUPPORTED_DERIBIT_SUBSCRIPTIONS",
+        "dataset_scope_rule": "Versioned public instrument/class/channel allowlist; full public target admitted in stages after capacity evidence",
+        "operations": {
+          "DISCOVER_METADATA": "ALLOWED",
+          "ACQUIRE": "ALLOWED",
+          "STORE": "ALLOWED",
+          "INTERNAL_COMPUTE": "ALLOWED",
+          "AI_INFERENCE": "PENDING",
+          "MODEL_TRAINING": "PENDING",
+          "AS_SHOWN_REPLAY": "ALLOWED",
+          "DISPLAY": "ALLOWED",
+          "REDISTRIBUTE": "PENDING",
+          "EXPORT": "PENDING",
+          "PERSONAL_DOWNLOAD": "PENDING",
+          "AI_DEVELOPMENT": "PENDING",
+          "USER_MEMORY": "PENDING",
+          "EVAL": "PENDING"
+        },
+        "evidence_refs": [
+          "DERIBIT_FZE_TERMS_2026_08_13",
+          "DERIBIT_COLLECTION_GUIDE"
+        ],
+        "conditions": [
+          "Operator signs exact scope and terms applicability, no scraping or unsupported extraction",
+          "Public supported data channels only; no trade operations/withdrawals",
+          "Personal corpus is isolated from product and AI development",
+          "Policy interpretation does not override §27.1(i); ambiguous route/scope stops for review",
+          "Provider/account channel eligibility and measured quotas are required; no auth or rate-limit bypass"
+        ]
+      },
+      {
+        "id": "DERIBIT_PERSONAL_HISTORY",
+        "source_id": "DERIBIT",
+        "grant_type": "PERSONAL_USE",
+        "purpose": "PERSONAL_NON_COMMERCIAL",
+        "audience": "SELF",
+        "rights_namespace": "personal/<subject>",
+        "route": "SUPPORTED_DERIBIT_HISTORY_API",
+        "dataset_scope_rule": "Named documented historical methods, bounded periods and request budget; not unbounded extraction",
+        "operations": {
+          "DISCOVER_METADATA": "ALLOWED",
+          "ACQUIRE": "ALLOWED",
+          "STORE": "ALLOWED",
+          "INTERNAL_COMPUTE": "ALLOWED",
+          "AI_INFERENCE": "PENDING",
+          "MODEL_TRAINING": "PENDING",
+          "AS_SHOWN_REPLAY": "ALLOWED",
+          "DISPLAY": "ALLOWED",
+          "REDISTRIBUTE": "PENDING",
+          "EXPORT": "PENDING",
+          "PERSONAL_DOWNLOAD": "PENDING",
+          "AI_DEVELOPMENT": "PENDING",
+          "USER_MEMORY": "PENDING",
+          "EVAL": "PENDING"
+        },
+        "evidence_refs": [
+          "DERIBIT_FZE_TERMS_2026_08_13",
+          "DERIBIT_COLLECTION_GUIDE"
+        ],
+        "conditions": [
+          "Separate route review under applicable terms; subscriptions grant does not silently grant historical crawling",
+          "No fabricated unavailable historical L2; source retention and historical coverage remain explicit"
+        ]
+      },
+      {
+        "id": "FRED_PERSONAL_BOUNDED_DOWNLOAD",
+        "source_id": "FRED_ALFRED",
+        "grant_type": "PERSONAL_USE",
+        "purpose": "PERSONAL_NON_COMMERCIAL",
+        "audience": "SELF",
+        "rights_namespace": "personal/<subject>",
+        "route": "MANUAL_SITE_ALFRED_DOWNLOAD",
+        "dataset_scope_rule": "Explicit finite list of used series, named download files and vintages; no recursive catalog/wholesale collection or automated website requests",
+        "operations": {
+          "DISCOVER_METADATA": "ALLOWED",
+          "ACQUIRE": "ALLOWED",
+          "STORE": "DENIED_BY_TERMS",
+          "INTERNAL_COMPUTE": "PENDING",
+          "AI_INFERENCE": "DENIED",
+          "MODEL_TRAINING": "DENIED_BY_TERMS",
+          "AS_SHOWN_REPLAY": "PENDING",
+          "DISPLAY": "PENDING",
+          "REDISTRIBUTE": "PENDING",
+          "EXPORT": "PENDING",
+          "PERSONAL_DOWNLOAD": "ALLOWED",
+          "AI_DEVELOPMENT": "DENIED_BY_TERMS",
+          "USER_MEMORY": "DENIED",
+          "EVAL": "DENIED"
+        },
+        "evidence_refs": [
+          "FRED_TERMS_2026_09_28"
+        ],
+        "conditions": [
+          "General License personal copy is not an automatic corpus/database licence; FRED_GENERAL_STORAGE restricts corpus storage (label (p) in the official copy retrieved on 2026-09-28)",
+          "Copies downloaded by the user through ordinary site features only, retaining notices; no bundled downloader or scraping",
+          "Development/ML/evals/hosted Runs/AI memory on these copies not admitted",
+          "Odelix corpus import/archival STORE requires separately documented written permission; synthetic files are used in development"
+        ]
+      },
+      {
+        "id": "FRED_BULK_API_CORPUS",
+        "source_id": "FRED_ALFRED",
+        "grant_type": "PERSONAL_USE",
+        "purpose": "PERSONAL_NON_COMMERCIAL",
+        "audience": "SELF",
+        "rights_namespace": "personal/<subject>",
+        "route": "FRED_API_V1_V2_BULK",
+        "dataset_scope_rule": "No current execution; former full-universe target retained as denied scope",
+        "operations": {
+          "DISCOVER_METADATA": "DENIED_BY_TERMS",
+          "ACQUIRE": "DENIED_BY_TERMS",
+          "STORE": "DENIED_BY_TERMS",
+          "INTERNAL_COMPUTE": "DENIED_BY_TERMS",
+          "AI_INFERENCE": "DENIED_BY_TERMS",
+          "MODEL_TRAINING": "DENIED_BY_TERMS",
+          "AS_SHOWN_REPLAY": "DENIED_BY_TERMS",
+          "DISPLAY": "DENIED_BY_TERMS",
+          "REDISTRIBUTE": "DENIED_BY_TERMS",
+          "EXPORT": "DENIED_BY_TERMS",
+          "PERSONAL_DOWNLOAD": "DENIED_BY_TERMS",
+          "AI_DEVELOPMENT": "DENIED_BY_TERMS",
+          "USER_MEMORY": "DENIED_BY_TERMS",
+          "EVAL": "DENIED_BY_TERMS"
+        },
+        "evidence_refs": [
+          "FRED_TERMS_2026_09_28"
+        ],
+        "conditions": [
+          "API-store, wholesale mirroring and software/AI-development not unlocked by personal purpose",
+          "A later provider-approved route requires a new profile with exact written evidence; no fallback through OpenBB/MCP/ALFRED"
+        ]
+      }
+    ],
+    "recording_workflow": {
+      "first_issue": "ODX-STK-024",
+      "evidence": "Record published personal terms and operator attestation; no blanket new licence procurement for supported personal route. Supplier written approval only for operations requiring it.",
+      "no_automatic_signatures": true,
+      "actual_grants_created_by_bundle": false
+    },
+    "namespace_firewall": {
+      "default_namespace": "NO_ACCESS",
+      "personal_prefix": "personal/",
+      "product_prefix": "product/",
+      "guards": [
+        "acquisition/write",
+        "query and cache hit",
+        "UI layer binding",
+        "replay and export",
+        "context compilation and model egress",
+        "source aliases and nested lineage"
+      ],
+      "default_product_mount_personal_corpus": false,
+      "prohibition": "Same user identity, same machine or same normalizer does not turn personal purpose into product rights. No direct adapter bypass.",
+      "test_owner": "ODX-PRD-031",
+      "reference_checker": "tools/_rights.py",
+      "runtime_checker_issue": "ODX-MKT-045"
+    }
+  },
+  "node_demand_policy": {
+    "id": "NODE_PAPER_DEMAND",
+    "decision_status": "PROPOSED_THRESHOLD_AWAITING_RECORDED_APPROVAL",
+    "review_issue_id": "ODX-STK-023",
+    "window_days": 60,
+    "min_unique_eligible_users": 5,
+    "min_pilot_commitments": 2,
+    "review_every_days": 14,
+    "eligible_use_cases": [
+      "LOCAL_DATA_NO_EGRESS",
+      "OFFLINE_REPLAY_OR_PAPER",
+      "MEASURED_LATENCY_OVER_AGREED_PAPER_BUDGET"
+    ],
+    "exclusions": [
+      "REQUEST_FOR_REAL_TRADING_KEYS_ALONE",
+      "SELF_REPORTED_VAGUE_LATENCY",
+      "MULTIPLE_REQUESTS_FROM_SAME_OPERATOR"
+    ],
+    "prerequisite_gates": [
+      "HOSTED_PAPER_READY",
+      "HOSTED_MISSION_READY"
+    ],
+    "activation_requires": [
+      "NODE_PAPER_DEMAND",
+      "NODE_PAPER_SCOPE_APPROVED"
+    ],
+    "effect": "Makes conditional PAPER packaging eligible in next planning cycle; no automatic deployment/purchase/capability escalation.",
+    "on_not_met": "Remain DEFERRED with observed counts and dated reason, review after14 days. One explicit bounded founder-sponsored research spike may be separately recorded, not assumed.",
+    "release": "r15.11",
+    "authorization_registry": "GRANTS.json",
+    "required_evidence_types": [
+      "QUALIFIED_DEMAND_RECEIPT",
+      "DATA_RIGHTS_AND_SECURITY_CHECK",
+      "SUPPORT_AND_RESOURCE_BUDGET"
+    ],
+    "evidence_types_are_not_grants": true
+  },
+  "grant_catalog": {
+    "release": "r15.11",
+    "kind": "AUTHORIZATION_DEFINITIONS_NOT_RUNTIME_GRANTS",
+    "definitions": [
+      {
+        "id": "FREQTRADE_CONNECTOR_APPROVED",
+        "owner": "odelix-execution",
+        "recording_issue": "ODX-EXE-014",
+        "criteria": "Exact read-only endpoints, licence/provenance, local scope and reviewed package; no effect APIs.",
+        "status": "NOT_GRANTED",
+        "evidence_required": true,
+        "approval_not_issued_by_bundle": true
+      },
+      {
+        "id": "NODE_PAPER_LOCAL_BRAIN_APPROVED",
+        "owner": "odelix-harness",
+        "recording_issue": "ODX-HAR-019",
+        "criteria": "Local-only brain profile and private Skill exclusion; no-egress proven before enablement.",
+        "status": "NOT_GRANTED",
+        "evidence_required": true,
+        "approval_not_issued_by_bundle": true
+      },
+      {
+        "id": "NODE_PAPER_SCOPE_APPROVED",
+        "owner": "odelix-product",
+        "recording_issue": "ODX-STK-023",
+        "criteria": "Approved bounded PAPER package scope, data/security/support and resource budget; no real environment.",
+        "status": "NOT_GRANTED",
+        "evidence_required": true,
+        "approval_not_issued_by_bundle": true
+      },
+      {
+        "id": "SOURCE_USE_BY_OPERATION",
+        "owner": "odelix-market",
+        "recording_issue": "ODX-STK-024",
+        "criteria": "Exact source/entity/terms/dataset/route/purpose/operation with evidence and scoped signature.",
+        "status": "NOT_GRANTED",
+        "evidence_required": true,
+        "approval_not_issued_by_bundle": true
+      },
+      {
+        "id": "OPERATIONS_IF_ACTIVATING",
+        "owner": "odelix-stack",
+        "recording_issue": "ODX-STK-025",
+        "criteria": "Host/limits/storage/restore/preflight and allowed capture window; never inferred from code completion.",
+        "status": "NOT_GRANTED",
+        "evidence_required": true,
+        "approval_not_issued_by_bundle": true
+      },
+      {
+        "id": "EXPLICIT_REPOSITORY_TRANSFER_APPROVAL",
+        "owner": "odelix-stack",
+        "recording_issue": "ODX-STK-007",
+        "criteria": "Owner-signed exact source/target repositories, visibility, principals, scope and rollback; no automatic transfer on code completion.",
+        "status": "NOT_GRANTED",
+        "evidence_required": true,
+        "approval_not_issued_by_bundle": true
+      }
+    ],
+    "actual_grants": [],
+    "policy": "Ready gates are evidence, not authorization. Source-use records live in Market policy and must bind one allowed operation and route."
+  },
+  "gate_catalog_sha256": "97070f3f6ebd9ecea9384cc374694965d75b0f93b2be0ca5d2c022acee184f37",
+  "repository_binding": {
+    "repository": "odelix-web",
+    "target_full_name": null,
+    "actual_full_name": null,
+    "actual_binding_status": "UNVERIFIED_IN_THIS_BUNDLE",
+    "logical_repo_lead": "repo-lead:odelix-web",
+    "assigned_principal": null,
+    "global_project_owner": "delivery-coordinator",
+    "documentation_root": "odelix-web",
+    "start_here": "odelix-web/AGENTS.md",
+    "agent_instructions": "odelix-web/AGENTS.md",
+    "purpose": "Account, Connect viewer и Web/Desk composition",
+    "runtime_role": "Browser web client",
+    "proposed_source_roots": [
+      "apps/web/",
+      "packages/web-ui/"
+    ],
+    "source_roots_status": "PROPOSED_VERIFY_IN_ACTUAL_CHECKOUT",
+    "read_documents": [
+      "odelix-web/AGENTS.md",
+      "odelix-web/docs/DEVELOPMENT.md"
+    ],
+    "issue_directory": "odelix-web/delivery/CONTEXT.json",
+    "planned_issue_ids": [
+      "ODX-WEB-001",
+      "ODX-WEB-002",
+      "ODX-WEB-003",
+      "ODX-WEB-004",
+      "ODX-WEB-005",
+      "ODX-WEB-006",
+      "ODX-WEB-007",
+      "ODX-WEB-008",
+      "ODX-WEB-009",
+      "ODX-WEB-010"
+    ],
+    "planned_issue_count": 10,
+    "initial_candidate": "ODX-WEB-001",
+    "candidate_status": "PLANNED_RECONCILE_ACTUAL_STATE_AND_GRANT",
+    "constraints": "Работать в actual repo; transfer/rename не prerequisite. Operations и external pilot gated отдельно; локальные fixtures не нагружают production.",
+    "runtime_status": "UNVERIFIED_IN_THIS_DOCUMENT_UPDATE",
+    "documentation_isolation": "LOCAL_NAVIGATION_WITH_EXPLICIT_EXTERNAL_ARTIFACT_REQUIREMENTS",
+    "future_organization_full_name": "odelixhq/odelix-web",
+    "preferred_owner": "a3ka",
+    "preferred_full_name": "a3ka/odelix-web",
+    "visibility_policy": "PRIVATE_RECOMMENDED_FOR_UNRELEASED_IP; ACTUAL_VISIBILITY_UNVERIFIED; NO_AUTOMATIC_CHANGE",
+    "repo_transfer_required_for_implementation": false
+  },
+  "external_issue_dependencies": [
+    {
+      "id": "ODX-EXE-004",
+      "repository": "odelix-execution",
+      "title": "Проверить paper lifecycle на partial-fill/cancel/duplicate races",
+      "primary_module_id": "EXE-OMS",
+      "runtime_status": "UNVERIFIED"
+    },
+    {
+      "id": "ODX-HAR-007",
+      "repository": "odelix-harness",
+      "title": "Реализовать independent Critic и bounded repair",
+      "primary_module_id": "HAR-CRT",
+      "runtime_status": "UNVERIFIED"
+    },
+    {
+      "id": "ODX-HAR-011",
+      "repository": "odelix-harness",
+      "title": "Добавить research Critic и объяснение сравнения вариантов",
+      "primary_module_id": "HAR-CRT",
+      "runtime_status": "UNVERIFIED"
+    },
+    {
+      "id": "ODX-PRD-004",
+      "repository": "odelix-product",
+      "title": "Реализовать capabilities, data-rights и durable Run intake",
+      "primary_module_id": "PLT-CP",
+      "runtime_status": "UNVERIFIED"
+    },
+    {
+      "id": "ODX-PRD-011",
+      "repository": "odelix-product",
+      "title": "Написать ChangeSet Preview/Apply/Reject/Undo команды",
+      "primary_module_id": "INV-CHG",
+      "runtime_status": "UNVERIFIED"
+    },
+    {
+      "id": "ODX-PRD-012",
+      "repository": "odelix-product",
+      "title": "Подключить Stripe Billing через отдельный provider adapter",
+      "primary_module_id": "PLT-BIL",
+      "runtime_status": "UNVERIFIED"
+    },
+    {
+      "id": "ODX-PRD-013",
+      "repository": "odelix-product",
+      "title": "Завершить usage reservation/settlement и коммерческие budgets",
+      "primary_module_id": "PLT-BIL",
+      "runtime_status": "UNVERIFIED"
+    },
+    {
+      "id": "ODX-PRD-017",
+      "repository": "odelix-product",
+      "title": "Реализовать Experiment/Trial ledger и асинхронные jobs",
+      "primary_module_id": "RES-EXP",
+      "runtime_status": "UNVERIFIED"
+    },
+    {
+      "id": "ODX-PRD-018",
+      "repository": "odelix-product",
+      "title": "Подключить ResearchComputePort и ArtifactStore adapters",
+      "primary_module_id": "RES-EXP",
+      "runtime_status": "UNVERIFIED"
+    },
+    {
+      "id": "ODX-PRD-019",
+      "repository": "odelix-product",
+      "title": "Сохранить ValidationReport и immutable StrategyVersion",
+      "primary_module_id": "RES-STR",
+      "runtime_status": "UNVERIFIED"
+    },
+    {
+      "id": "ODX-PRD-021",
+      "repository": "odelix-product",
+      "title": "Написать ExecutionClient и read-only paper projections",
+      "primary_module_id": "CAP-EXE",
+      "runtime_status": "UNVERIFIED"
+    },
+    {
+      "id": "ODX-PRD-022",
+      "repository": "odelix-product",
+      "title": "Реализовать durable Watch/Mission objects и predicate engine adapter",
+      "primary_module_id": "INV-WAT",
+      "runtime_status": "UNVERIFIED"
+    },
+    {
+      "id": "ODX-PRD-024",
+      "repository": "odelix-product",
+      "title": "Написать durable notification outbox и первый delivery adapter",
+      "primary_module_id": "AREA-PRD-NOTIFICATIONS",
+      "runtime_status": "UNVERIFIED"
+    },
+    {
+      "id": "ODX-WKS-002",
+      "repository": "odelix-workstation",
+      "title": "Подключить Lightweight Charts через RendererPort и SelectionRef",
+      "primary_module_id": "WKS-SCN",
+      "runtime_status": "UNVERIFIED"
+    },
+    {
+      "id": "ODX-WKS-003",
+      "repository": "odelix-workstation",
+      "title": "Адаптировать eTape shell/link groups поверх Dockview core и нашего LayoutPort",
+      "primary_module_id": "WKS-LYT",
+      "runtime_status": "UNVERIFIED"
+    },
+    {
+      "id": "ODX-WKS-004",
+      "repository": "odelix-workstation",
+      "title": "Подключить CodeMirror как общий SpecEditorPort",
+      "primary_module_id": "WKS-CFG",
+      "runtime_status": "UNVERIFIED"
+    },
+    {
+      "id": "ODX-WKS-011",
+      "repository": "odelix-workstation",
+      "title": "Создать browser dev-host общей Workstation без Desktop-блокера",
+      "primary_module_id": "WKS-APP",
+      "runtime_status": "UNVERIFIED"
+    }
+  ],
+  "references": [
+    {
+      "id": "DEP-143d61eff7",
+      "publisher": "odelix-stack",
+      "source_path": "reference/OSS-REVIEW-RU.md",
+      "source_fragment": null,
+      "reference_kind": "EXTERNAL_DOCUMENT",
+      "source_bundle": "r15.3",
+      "source_original_path": "reference/OSS-REVIEW-RU.md",
+      "source_sha256": "e0a4fc1a5cfe1656eb16628539dd976142894c14454c542e46ef00e83fdb3042",
+      "bundle_reference_status": "DOCUMENT_SNAPSHOT_ONLY",
+      "required_runtime_release": null,
+      "runtime_artifact_digest": null,
+      "runtime_resolution": "NOT_RESOLVED_BY_DOCUMENTATION",
+      "required_action": "Получить необходимый producer-owned контракт/fixture с точным release/commit и digest; не читать случайный соседний checkout.",
+      "onboarding_required": false,
+      "usage": "Reference unless the specific TaskPacket requires this producer artifact; not a blanket prerequisite."
+    },
+    {
+      "id": "DEP-14e5071e3a",
+      "publisher": "odelix-stack",
+      "source_path": "reference/PROTOTYPE-SOURCES.json",
+      "source_fragment": null,
+      "reference_kind": "EXTERNAL_DOCUMENT",
+      "source_bundle": "r15.3",
+      "source_original_path": "reference/PROTOTYPE-SOURCES.json",
+      "source_sha256": "530f8c0a935c0def1d83a6854f357f6d0f44e06e457328b8103bf2fe80a7882a",
+      "bundle_reference_status": "DOCUMENT_SNAPSHOT_ONLY",
+      "required_runtime_release": null,
+      "runtime_artifact_digest": null,
+      "runtime_resolution": "NOT_RESOLVED_BY_DOCUMENTATION",
+      "required_action": "Получить необходимый producer-owned контракт/fixture с точным release/commit и digest; не читать случайный соседний checkout.",
+      "onboarding_required": false,
+      "usage": "Reference unless the specific TaskPacket requires this producer artifact; not a blanket prerequisite."
+    },
+    {
+      "id": "DEP-2fd02fb327",
+      "publisher": "odelix-product",
+      "source_path": "docs/OPTIONS-WORKFLOW.md",
+      "source_fragment": null,
+      "reference_kind": "EXTERNAL_DOCUMENT",
+      "source_bundle": "r15.3",
+      "source_original_path": "odelix-product/docs/OPTIONS-WORKFLOW.md",
+      "source_sha256": "b58fde1b8e7d98f0db6f0a5b87786d32dad57e79b45386cd704517b3f1926119",
+      "bundle_reference_status": "DOCUMENT_SNAPSHOT_ONLY",
+      "required_runtime_release": null,
+      "runtime_artifact_digest": null,
+      "runtime_resolution": "NOT_RESOLVED_BY_DOCUMENTATION",
+      "required_action": "Получить необходимый producer-owned контракт/fixture с точным release/commit и digest; не читать случайный соседний checkout.",
+      "onboarding_required": false,
+      "usage": "Reference unless the specific TaskPacket requires this producer artifact; not a blanket prerequisite."
+    },
+    {
+      "id": "DEP-52ea262d35",
+      "publisher": "odelix-stack",
+      "source_path": "docs/INTEGRATIONS.md",
+      "source_fragment": "code-reuse",
+      "reference_kind": "EXTERNAL_DOCUMENT",
+      "source_bundle": "r15.3",
+      "source_original_path": null,
+      "source_sha256": "1d4e1604b9f9b87e7af39469ed660cc257285e0214f0ec93600d25bea5b0f66f",
+      "bundle_reference_status": "DOCUMENT_SNAPSHOT_ONLY",
+      "required_runtime_release": null,
+      "runtime_artifact_digest": null,
+      "runtime_resolution": "NOT_RESOLVED_BY_DOCUMENTATION",
+      "required_action": "Получить необходимый producer-owned контракт/fixture с точным release/commit и digest; не читать случайный соседний checkout.",
+      "onboarding_required": false,
+      "usage": "Reference unless the specific TaskPacket requires this producer artifact; not a blanket prerequisite."
+    },
+    {
+      "id": "DEP-568bec8dbe",
+      "publisher": "odelix-workstation",
+      "source_path": "docs/WORKSTATION-SPEC.md",
+      "source_fragment": null,
+      "reference_kind": "EXTERNAL_DOCUMENT",
+      "source_bundle": "r15.3",
+      "source_original_path": "odelix-workstation/docs/WORKSTATION-SPEC.md",
+      "source_sha256": "71a2d9c147bfd983cdf53da0f7826f91de11723e90639c2c9fd3ff92a8087ce6",
+      "bundle_reference_status": "DOCUMENT_SNAPSHOT_ONLY",
+      "required_runtime_release": null,
+      "runtime_artifact_digest": null,
+      "runtime_resolution": "NOT_RESOLVED_BY_DOCUMENTATION",
+      "required_action": "Получить необходимый producer-owned контракт/fixture с точным release/commit и digest; не читать случайный соседний checkout.",
+      "onboarding_required": false,
+      "usage": "Reference unless the specific TaskPacket requires this producer artifact; not a blanket prerequisite."
+    },
+    {
+      "id": "DEP-90bbeb40e2",
+      "publisher": "odelix-stack",
+      "source_path": "archive/r15.1-source.zip",
+      "source_fragment": null,
+      "reference_kind": "ARCHIVE_ARTIFACT",
+      "source_bundle": "r15.3",
+      "source_original_path": null,
+      "source_sha256": "a90045b6083d07e41a802cdfe82c2ccff2b5f44769f27d72a167db77375f2ab8",
+      "bundle_reference_status": "EXTERNAL_HISTORY_OPTIONAL",
+      "required_runtime_release": null,
+      "runtime_artifact_digest": null,
+      "runtime_resolution": "NOT_RESOLVED_BY_DOCUMENTATION",
+      "required_action": "Получить необходимый producer-owned контракт/fixture с точным release/commit и digest; не читать случайный соседний checkout.",
+      "onboarding_required": false,
+      "usage": "Reference unless the specific TaskPacket requires this producer artifact; not a blanket prerequisite.",
+      "source_surface": "BUNDLE_HISTORY",
+      "history_optional": true
+    },
+    {
+      "id": "DEP-9359295523",
+      "publisher": "odelix-stack",
+      "source_path": "docs/DELIVERY-RUNBOOK.md",
+      "source_fragment": null,
+      "reference_kind": "EXTERNAL_PATH_LITERAL",
+      "source_bundle": "r15.3",
+      "source_original_path": "RUNBOOK.md",
+      "source_sha256": "4daed72d0d6f4abef23dfd31077080e5f5bf11ad93f1105e25602c91f8507dcf",
+      "bundle_reference_status": "DOCUMENT_SNAPSHOT_ONLY",
+      "required_runtime_release": null,
+      "runtime_artifact_digest": null,
+      "runtime_resolution": "NOT_RESOLVED_BY_DOCUMENTATION",
+      "required_action": "Получить необходимый producer-owned контракт/fixture с точным release/commit и digest; не читать случайный соседний checkout.",
+      "onboarding_required": false,
+      "usage": "Reference unless the specific TaskPacket requires this producer artifact; not a blanket prerequisite."
+    },
+    {
+      "id": "DEP-b335630551",
+      "publisher": "odelix-stack",
+      "source_path": "AGENTS.md",
+      "source_fragment": null,
+      "reference_kind": "EXTERNAL_DOCUMENT",
+      "source_bundle": "r15.3",
+      "source_original_path": null,
+      "source_sha256": "1f7c337618717543f2a1a9fd798e4c1e234dd3fd635860263cb48c5605ff5cbb",
+      "bundle_reference_status": "DOCUMENT_SNAPSHOT_ONLY",
+      "required_runtime_release": null,
+      "runtime_artifact_digest": null,
+      "runtime_resolution": "NOT_RESOLVED_BY_DOCUMENTATION",
+      "required_action": "Получить необходимый producer-owned контракт/fixture с точным release/commit и digest; не читать случайный соседний checkout.",
+      "onboarding_required": false,
+      "usage": "Reference unless the specific TaskPacket requires this producer artifact; not a blanket prerequisite.",
+      "locator_revision": "r15.6"
+    }
+  ],
+  "implementation_registry_sha256": "3f5497a98da8ac723e1e6526853a1347e2fc157a8db66862b89654b1c57d7bc6",
+  "implementation_blueprint": {
+    "schema_version": 1,
+    "release": "r15.11",
+    "kind": "GENERATED_IMPLEMENTATION_BLUEPRINT_NOT_DEPENDENCY_LOCK",
+    "foundation": "Основа — React/TypeScript browser host и общие Workstation packages. Здесь account/route/share/UI composition; не ещё один terminal engine, не отдельные численные модели. External preview использует общие WKS-компоненты, без второго data-router.",
+    "bindings": [
+      {
+        "id": "BND-042",
+        "repository": "odelix-web",
+        "source_id": "OIDC",
+        "mode": "SERVICE_ADAPTER",
+        "take": "Managed OIDC, Auth0 — прежний кандидат; jose для верификации JWT/JWKS.",
+        "build": "IdentityPort, issuer/audience/expiry, session boundary; отдельные Odelix entitlements и grants.",
+        "exclude": "IdP не выдаёт право читать любой инструмент и не вычисляет Odelix billing permissions.",
+        "source_ref": "https://auth0.com/docs/get-started/authentication-and-authorization-flow/authorization-code-flow-with-pkce",
+        "observed_pin": null,
+        "adoption_status": "NOT_INSTALLED_OR_VERIFIED_BY_THIS_BUNDLE",
+        "evidence_status": "INHERITED_DECLARED_SCOPE_NOT_FRESH_SOURCE_AUDIT",
+        "issue_ids": [
+          "ODX-WEB-001"
+        ],
+        "modules": [
+          "AREA-WEB-SHELL"
+        ],
+        "issue_scope": [
+          {
+            "issue_id": "ODX-WEB-001",
+            "module": "AREA-WEB-SHELL",
+            "paths": [
+              "apps/web/src/app/",
+              "packages/web-ui/",
+              "packages/product-api-client/",
+              "apps/web/tests/account.spec.ts"
+            ]
+          }
+        ],
+        "path_status": "PROPOSED_DESTINATIONS_FROM_EXISTING_TASKS_NOT_VERIFIED_CHECKOUT",
+        "before_adoption": [
+          "Найти existing equivalent в своём repo.",
+          "Подтвердить выбранный release/commit, license/NOTICE/dependency tree.",
+          "Проверить adapter/contract/failure cases и записать фактический pin."
+        ],
+        "mapping_rule": "EXPLICIT_SOURCE_ID_IN_EXISTING_ISSUE; services with other explicit IDs are shown separately, not inferred installed"
+      },
+      {
+        "id": "BND-043",
+        "repository": "odelix-web",
+        "source_id": "REACT",
+        "mode": "LIBRARY",
+        "take": "React + TypeScript: UI composition и типы. Next.js относится к browser host при подтверждении выбранной конфигурации, не ко всем пакетам WKS.",
+        "build": "Наши компоненты и bindings; high-rate данные вне React setState на каждый tick.",
+        "exclude": "Это не готовый терминал, не общий backend и не permission boundary.",
+        "source_ref": "https://nextjs.org/docs",
+        "observed_pin": null,
+        "adoption_status": "NOT_INSTALLED_OR_VERIFIED_BY_THIS_BUNDLE",
+        "evidence_status": "INHERITED_DECLARED_SCOPE_NOT_FRESH_SOURCE_AUDIT",
+        "issue_ids": [
+          "ODX-WEB-001",
+          "ODX-WEB-002",
+          "ODX-WEB-003",
+          "ODX-WEB-004",
+          "ODX-WEB-005",
+          "ODX-WEB-006",
+          "ODX-WEB-007",
+          "ODX-WEB-008",
+          "ODX-WEB-009",
+          "ODX-WEB-010"
+        ],
+        "modules": [
+          "AREA-WEB-ACCOUNT",
+          "AREA-WEB-ASK",
+          "AREA-WEB-DESK",
+          "AREA-WEB-JOURNAL",
+          "AREA-WEB-SHELL",
+          "AREA-WEB-WATCH",
+          "WEB-STRATEGY-LAB"
+        ],
+        "issue_scope": [
+          {
+            "issue_id": "ODX-WEB-001",
+            "module": "AREA-WEB-SHELL",
+            "paths": [
+              "apps/web/src/app/",
+              "packages/web-ui/",
+              "packages/product-api-client/",
+              "apps/web/tests/account.spec.ts"
+            ]
+          },
+          {
+            "issue_id": "ODX-WEB-002",
+            "module": "AREA-WEB-ASK",
+            "paths": [
+              "apps/web/src/features/runs/",
+              "apps/web/src/features/evidence/",
+              "apps/web/tests/run-viewer.spec.ts"
+            ]
+          },
+          {
+            "issue_id": "ODX-WEB-003",
+            "module": "AREA-WEB-DESK",
+            "paths": [
+              "apps/web/src/features/desk/",
+              "apps/web/tests/select-ask-save.spec.ts"
+            ]
+          },
+          {
+            "issue_id": "ODX-WEB-004",
+            "module": "AREA-WEB-ACCOUNT",
+            "paths": [
+              "apps/web/src/features/account/",
+              "apps/web/tests/usage-access.spec.ts"
+            ]
+          },
+          {
+            "issue_id": "ODX-WEB-005",
+            "module": "WEB-STRATEGY-LAB",
+            "paths": [
+              "apps/web/src/features/research-builder/",
+              "apps/web/tests/research-draft.spec.ts"
+            ]
+          },
+          {
+            "issue_id": "ODX-WEB-006",
+            "module": "WEB-STRATEGY-LAB",
+            "paths": [
+              "apps/web/src/features/experiments/",
+              "apps/web/tests/experiment-lifecycle.spec.ts"
+            ]
+          },
+          {
+            "issue_id": "ODX-WEB-007",
+            "module": "WEB-STRATEGY-LAB",
+            "paths": [
+              "apps/web/src/features/experiment-compare/",
+              "apps/web/tests/compare-variants.spec.ts"
+            ]
+          },
+          {
+            "issue_id": "ODX-WEB-008",
+            "module": "WEB-STRATEGY-LAB",
+            "paths": [
+              "apps/web/src/features/research-passport/",
+              "apps/web/tests/research-export.spec.ts"
+            ]
+          },
+          {
+            "issue_id": "ODX-WEB-009",
+            "module": "AREA-WEB-JOURNAL",
+            "paths": [
+              "apps/web/src/features/paper/",
+              "apps/web/src/features/journal/",
+              "apps/web/tests/paper-journal.spec.ts"
+            ]
+          },
+          {
+            "issue_id": "ODX-WEB-010",
+            "module": "AREA-WEB-WATCH",
+            "paths": [
+              "apps/web/src/features/watches/",
+              "apps/web/src/features/missions/",
+              "apps/web/tests/mission-policy.spec.ts"
+            ]
+          }
+        ],
+        "path_status": "PROPOSED_DESTINATIONS_FROM_EXISTING_TASKS_NOT_VERIFIED_CHECKOUT",
+        "before_adoption": [
+          "Найти existing equivalent в своём repo.",
+          "Подтвердить выбранный release/commit, license/NOTICE/dependency tree.",
+          "Проверить adapter/contract/failure cases и записать фактический pin."
+        ],
+        "mapping_rule": "EXPLICIT_SOURCE_ID_IN_EXISTING_ISSUE; services with other explicit IDs are shown separately, not inferred installed"
+      },
+      {
+        "id": "BND-044",
+        "repository": "odelix-web",
+        "source_id": "TANSTACK",
+        "mode": "LIBRARY",
+        "take": "TanStack Query для request lifecycle/cache server objects; точный пакет/pin выбирается в задаче.",
+        "build": "Query keys с tenant/object/revision, invalidation и typed API client.",
+        "exclude": "Не класть каждый tick и полную книгу в query cache как authoritative Market state.",
+        "source_ref": "https://tanstack.com/query/latest",
+        "observed_pin": null,
+        "adoption_status": "NOT_INSTALLED_OR_VERIFIED_BY_THIS_BUNDLE",
+        "evidence_status": "INHERITED_DECLARED_SCOPE_NOT_FRESH_SOURCE_AUDIT",
+        "issue_ids": [
+          "ODX-WEB-001",
+          "ODX-WEB-002",
+          "ODX-WEB-003",
+          "ODX-WEB-005",
+          "ODX-WEB-007"
+        ],
+        "modules": [
+          "AREA-WEB-ASK",
+          "AREA-WEB-DESK",
+          "AREA-WEB-SHELL",
+          "WEB-STRATEGY-LAB"
+        ],
+        "issue_scope": [
+          {
+            "issue_id": "ODX-WEB-001",
+            "module": "AREA-WEB-SHELL",
+            "paths": [
+              "apps/web/src/app/",
+              "packages/web-ui/",
+              "packages/product-api-client/",
+              "apps/web/tests/account.spec.ts"
+            ]
+          },
+          {
+            "issue_id": "ODX-WEB-002",
+            "module": "AREA-WEB-ASK",
+            "paths": [
+              "apps/web/src/features/runs/",
+              "apps/web/src/features/evidence/",
+              "apps/web/tests/run-viewer.spec.ts"
+            ]
+          },
+          {
+            "issue_id": "ODX-WEB-003",
+            "module": "AREA-WEB-DESK",
+            "paths": [
+              "apps/web/src/features/desk/",
+              "apps/web/tests/select-ask-save.spec.ts"
+            ]
+          },
+          {
+            "issue_id": "ODX-WEB-005",
+            "module": "WEB-STRATEGY-LAB",
+            "paths": [
+              "apps/web/src/features/research-builder/",
+              "apps/web/tests/research-draft.spec.ts"
+            ]
+          },
+          {
+            "issue_id": "ODX-WEB-007",
+            "module": "WEB-STRATEGY-LAB",
+            "paths": [
+              "apps/web/src/features/experiment-compare/",
+              "apps/web/tests/compare-variants.spec.ts"
+            ]
+          }
+        ],
+        "path_status": "PROPOSED_DESTINATIONS_FROM_EXISTING_TASKS_NOT_VERIFIED_CHECKOUT",
+        "before_adoption": [
+          "Найти existing equivalent в своём repo.",
+          "Подтвердить выбранный release/commit, license/NOTICE/dependency tree.",
+          "Проверить adapter/contract/failure cases и записать фактический pin."
+        ],
+        "mapping_rule": "EXPLICIT_SOURCE_ID_IN_EXISTING_ISSUE; services with other explicit IDs are shown separately, not inferred installed"
+      },
+      {
+        "id": "BND-045",
+        "repository": "odelix-web",
+        "source_id": "STRIPE",
+        "mode": "SERVICE_ADAPTER",
+        "take": "Stripe Billing/Checkout/portal и проверка webhook через SDK.",
+        "build": "BillingProviderPort, idempotent event projection, usage ledger/outbox и entitlements.",
+        "exclude": "Не доверять success URL; не вводить синхронную зависимость каждой операции от Stripe.",
+        "source_ref": "https://docs.stripe.com/billing/subscriptions/webhooks",
+        "observed_pin": null,
+        "adoption_status": "NOT_INSTALLED_OR_VERIFIED_BY_THIS_BUNDLE",
+        "evidence_status": "INHERITED_DECLARED_SCOPE_NOT_FRESH_SOURCE_AUDIT",
+        "issue_ids": [
+          "ODX-WEB-004"
+        ],
+        "modules": [
+          "AREA-WEB-ACCOUNT"
+        ],
+        "issue_scope": [
+          {
+            "issue_id": "ODX-WEB-004",
+            "module": "AREA-WEB-ACCOUNT",
+            "paths": [
+              "apps/web/src/features/account/",
+              "apps/web/tests/usage-access.spec.ts"
+            ]
+          }
+        ],
+        "path_status": "PROPOSED_DESTINATIONS_FROM_EXISTING_TASKS_NOT_VERIFIED_CHECKOUT",
+        "before_adoption": [
+          "Найти existing equivalent в своём repo.",
+          "Подтвердить выбранный release/commit, license/NOTICE/dependency tree.",
+          "Проверить adapter/contract/failure cases и записать фактический pin."
+        ],
+        "mapping_rule": "EXPLICIT_SOURCE_ID_IN_EXISTING_ISSUE; services with other explicit IDs are shown separately, not inferred installed"
+      }
+    ],
+    "services": [
+      {
+        "id": "SVC-17",
+        "name": "viem/wagmi; Privy при подтверждённом friction",
+        "category": "FUTURE_WALLET",
+        "coverage": "FUTURE_NO_ISSUE",
+        "issue_ids": [],
+        "related_issue_ids": [],
+        "owner": "odelix-product / odelix-web",
+        "gate": "Execution users / V1",
+        "decision": "Сначала standard external wallet, Privy условен. Read-only Research не требует кошелька.",
+        "evidence_source": "odelix-stack/docs/INTEGRATIONS.md",
+        "implementation_status": "NOT_VERIFIED",
+        "provider_selection": "AS_RECORDED_NOT_NEWLY_APPROVED"
+      }
+    ],
+    "inherited_candidate_references": [
+      {
+        "id": "BASE-18",
+        "group": "3.5 Workstation, charts и rendering",
+        "component": "[React](https://github.com/facebook/react) + TypeScript",
+        "license_as_recorded_in_baseline": "MIT / Apache-2.0",
+        "baseline_status": "`ADOPT`",
+        "role": "Presentation/composition baseline собственной web-native Workstation",
+        "boundary": "React components не владеют domain state; shell semantics принадлежат `WKS-*`",
+        "verification": "INHERITED_R12.1_NOT_REVERIFIED",
+        "installed_status": "NOT_VERIFIED",
+        "linked_source_id": "REACT",
+        "explicit_issue_ids": [
+          "ODX-WEB-001",
+          "ODX-WEB-002",
+          "ODX-WKS-001",
+          "ODX-WEB-003",
+          "ODX-WEB-004",
+          "ODX-WEB-005",
+          "ODX-WEB-006",
+          "ODX-WEB-007",
+          "ODX-WEB-008",
+          "ODX-WEB-009",
+          "ODX-WEB-010",
+          "ODX-WKS-009",
+          "ODX-WKS-010"
+        ],
+        "link_meaning": "GROUP_SOURCE_SCOPE_NOT_A_NEW_ADOPTION"
+      },
+      {
+        "id": "BASE-19",
+        "group": "3.5 Workstation, charts и rendering",
+        "component": "[TanStack Query](https://github.com/TanStack/query)",
+        "license_as_recorded_in_baseline": "MIT",
+        "baseline_status": "`ADOPT-LIMITED`",
+        "role": "Server-state cache, retries и invalidation в `WKS-APP`",
+        "boundary": "Не становится event/domain store; mutations идут только через application commands",
+        "verification": "INHERITED_R12.1_NOT_REVERIFIED",
+        "installed_status": "NOT_VERIFIED",
+        "linked_source_id": "TANSTACK",
+        "explicit_issue_ids": [
+          "ODX-WEB-001",
+          "ODX-WEB-002",
+          "ODX-WKS-001",
+          "ODX-WEB-003",
+          "ODX-WEB-005",
+          "ODX-WEB-007",
+          "ODX-WKS-009"
+        ],
+        "link_meaning": "GROUP_SOURCE_SCOPE_NOT_A_NEW_ADOPTION"
+      }
+    ],
+    "workstation_candidates": null,
+    "external_data_profiles": {
+      "schema_version": 1,
+      "release": "r15.10",
+      "decision_id": "ADR-011",
+      "decision_status": "SELECTED_FOR_IMPLEMENTATION",
+      "runtime_status": "NOT_RUN",
+      "owner": "odelix-market",
+      "normative_source": "odelix-market/docs/DATA-AND-REPLAY.md#external-data-layer",
+      "initial_profiles": [
+        {
+          "id": "ODP-DERIBIT-BARS",
+          "transport": "OpenBB ODP",
+          "provider": "deribit",
+          "model": "FuturesHistorical",
+          "api_route": "DISCOVER_FROM_PINNED_OPENAPI_NOT_GUESSED",
+          "instrument_scope": "Explicit BTC/ETH perpetual IDs; never alias to spot",
+          "mode": "HISTORICAL_POLL",
+          "initial_intervals": [
+            "1m",
+            "1h",
+            "1d"
+          ],
+          "kind": "external-observation",
+          "source_commit": "3e071fcc2cd9f891cac6040ae60296dba76dab46",
+          "source_files": [
+            "openbb_platform/providers/deribit/openbb_deribit/models/futures_historical.py"
+          ],
+          "limitations": [
+            "explicit date range; no full-history default",
+            "source precision preserved, not exact exchange reconstruction",
+            "no aggression/price-bin data"
+          ],
+          "readiness": "NOT_RUN",
+          "rights_status": "TO_VERIFY_BEFORE_FETCH_STORAGE_OR_REDISTRIBUTION",
+          "issue_ids": [
+            "ODX-MKT-091"
+          ]
+        },
+        {
+          "id": "ODP-ECB-REFERENCE",
+          "transport": "OpenBB ODP",
+          "provider": "ecb",
+          "model": "CurrencyReferenceRates",
+          "api_route": "DISCOVER_FROM_PINNED_OPENAPI_NOT_GUESSED",
+          "instrument_scope": "ECB current reference rates versus EUR",
+          "mode": "DATED_CURRENT_SNAPSHOT",
+          "kind": "external-observation",
+          "source_commit": "3e071fcc2cd9f891cac6040ae60296dba76dab46",
+          "source_files": [
+            "openbb_platform/providers/ecb/openbb_ecb/models/currency_reference_rates.py"
+          ],
+          "limitations": [
+            "daily.xml, not historical series",
+            "not executable intraday FX price",
+            "observation date not exact publication timestamp"
+          ],
+          "readiness": "NOT_RUN",
+          "rights_status": "TO_VERIFY_BEFORE_FETCH_STORAGE_OR_REDISTRIBUTION",
+          "issue_ids": [
+            "ODX-MKT-091"
+          ]
+        },
+        {
+          "id": "ODP-DERIBIT-CHAIN",
+          "transport": "OpenBB ODP",
+          "provider": "deribit",
+          "model": "OptionsChains",
+          "mode": "COMPOSITE_CURRENT_SNAPSHOT",
+          "kind": "external-observation",
+          "source_commit": "3e071fcc2cd9f891cac6040ae60296dba76dab46",
+          "source_files": [
+            "openbb_platform/providers/deribit/openbb_deribit/models/options_chains.py"
+          ],
+          "limitations": [
+            "one connection per expiry in upstream, require measured fanout cap",
+            "2s per expiry receive timeout; partial/exceptions not complete proof",
+            "BTC/ETH price conversion to USD and round(2)",
+            "IV percent divided by 100",
+            "New York aware row timestamps normalized to UTC preserving instant",
+            "contract_size=1 and today-derived DTE are not verified terms",
+            "date-only expiry and current universe do not supply historical PIT"
+          ],
+          "readiness": "NOT_RUN",
+          "rights_status": "TO_VERIFY_BEFORE_FETCH_STORAGE_OR_REDISTRIBUTION",
+          "issue_ids": [
+            "ODX-MKT-037",
+            "ODX-WKS-021"
+          ]
+        },
+        {
+          "id": "ODP-FRED-REVISED-PREVIEW",
+          "transport": "OpenBB ODP",
+          "provider": "fred",
+          "model": "FredSeries",
+          "mode": "DISABLED_API_PROFILE_NOT_PERSONAL_FILE_ROUTE",
+          "kind": "external-observation",
+          "source_commit": "3e071fcc2cd9f891cac6040ae60296dba76dab46",
+          "source_files": [
+            "openbb_platform/providers/fred/openbb_fred/models/series.py"
+          ],
+          "limitations": [
+            "Not installed/selected as active ODP fallback",
+            "FRED general restrictions apply beyond API: personal download not corpus storage",
+            "Use separate bounded personal file policy; no automated ODP/ML route"
+          ],
+          "readiness": "DISABLED_BY_TERMS",
+          "rights_status": "DENIED_BY_TERMS",
+          "issue_ids": [
+            "ODX-MKT-090",
+            "ODX-MKT-042",
+            "ODX-MKT-043",
+            "ODX-MKT-044"
+          ],
+          "decision_status": "NOT_ACTIVE",
+          "full_collector": null
+        }
+      ],
+      "capabilities_unavailable_in_initial_profiles": [
+        "canonical-capture",
+        "raw+canonical exchange archive",
+        "L2 stream",
+        "aggressor trade stream",
+        "footprint from events",
+        "depth bands 1.5..60",
+        "historical optionsflow",
+        "historical PIT by default",
+        "FORECAST_ACCEPTED",
+        "execution authorization"
+      ],
+      "cache_policy": "source+model+canonical instrument+query+normalization version+rights credential partition; reauthorize on hit; no silent provider fallback",
+      "replay_policy": "stored OpenBB response plus versioned deterministic normalization, not upstream event replay; no vendor call during saved replay",
+      "stack": "private OpenBB ODP service; Market-owned independent external adapter; common Odelix consumer contract; existing Product Fastify for hosted control",
+      "public_activation": "requires actual Product grants, source/AGPL/data rights and operational acceptance; local preview is not public authorization",
+      "full_collection_registry": "odelix-market/delivery/DATA-ACQUISITION.json",
+      "profile_scope_note": "OpenBB preview is separate from Deribit personal subscriptions. FRED automatic API profile disabled; bounded personal copies are not product preview/AI/corpus inputs."
+    },
+    "full_data_acquisition": {
+      "registry": "odelix-market/delivery/DATA-ACQUISITION.json",
+      "rights_registry": "odelix-market/delivery/SOURCE-USE-POLICY.json",
+      "scope": "Deribit staged PERSONAL_USE public universe; FRED bounded personal files and named vintages. No all-FRED mirror/API-store.",
+      "status": "SELECTED_FOR_IMPLEMENTATION",
+      "runtime_status": "NOT_STARTED_BY_BUNDLE"
+    },
+    "dependency_lock_verified": false,
+    "github_runtime_verified": false
+  }
+}
